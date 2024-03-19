@@ -1,0 +1,541 @@
+\documentclass[10pt]{article}
+\usepackage{comment,amsmath}
+\usepackage{graphicx,parskip}
+\usepackage{enumitem,todonotes}
+\usepackage{sometexdefs}
+
+%\usepackage[spanish]{babel}
+\usepackage{fontspec}
+\setmainfont{Fira Sans}
+\usepackage{microtype}
+
+%\bibliographystyle{apalike}
+\usepackage[letterpaper,bottom=.75in,top=1in,right=1in,lmargin=1.5in]{geometry}
+
+\usepackage[style=authoryear, backend=biber]{biblatex}
+\addbibresource{classbib.bib}
+
+\usepackage[mmddyyyy]{datetime}
+\usepackage{advdate}
+
+\usepackage{soul}
+\usepackage[compact,nobottomtitles*]{titlesec} %nobottomtitles
+\titleformat{\part}[hang]{\bfseries\large\scshape}{\hspace{-.5in}\thepart}{.5em}{}{}
+\titleformat{\section}[hang]{\large\bfseries}{\hspace{-.5in}\thesection ---}{.25em}{}{}
+%\titleformat{\subsection}[wrap]{\small\bfseries}{\thesubsection}{.5em}{}{}
+\titleformat{\subsubsection}[leftmargin]{\itshape\filleft}{\thesubsubsection}{.2em}{\hspace{-.75in}}{}
+\titleformat{\paragraph}[runin]{\bfseries}{\theparagraph}{0em}{}{}
+
+%\titlespacing{\part}{0ex}{.5ex plus .1ex minus .2ex}{.25\parskip}
+%\titlespacing{\section}{0ex}{1.5ex plus .1ex minus .2ex}{.25\parskip}
+\titlespacing*{\section}{-.5in}{1em}{0em}{}%
+%\titlespacing{\subsection}{0ex}{.5ex plus .1ex minus .1ex}{1ex}
+%\titlespacing{\subsection}{2pc}{1.5ex plus .1ex minus .2ex}{1pc}
+%\titlespacing{\subsection}{12pc}{1.5ex plus .1ex minus .2ex}{1pc}
+\titlespacing{\subsubsection}{0ex}{.5ex plus .1ex minus .1ex}{1ex}
+\titlespacing{\paragraph}{0em}{1ex}{.5ex plus .1ex minus .1ex}
+
+\newcommand{\secformat}[1]{\MakeLowercase{\so{#1}}}
+   % \so spaces out letters
+%\titleformat{\subsection}[block]
+%  {\normalfont\scshape\filcenter}
+%  {\thesection}
+%  {1em}
+%  {\secformat}
+
+  \titleformat{\subsection}[leftmargin]
+  {\small
+   \vspace{6pt}%
+   \sffamily\bfseries\filleft}
+  {\thesection}{.5em}{}
+
+\titlespacing{\subsection}{4pc}{1.5ex plus .1ex minus .2ex}{1pc}
+
+\newenvironment{introstuff} {\setcounter{secnumdepth}{0}} {\setcounter{secnumdepth}{1}}
+
+% Create new title appearance
+\makeatletter
+\def\maketitle{%
+    %\null
+    \thispagestyle{empty}%
+    \begin{center}\leavevmode
+        \normalfont
+        {\large \bfseries\@title\par}%
+        {\large \@author\par}%
+        {\large \@date\par}%
+    \end{center}%
+\null }
+\makeatother
+
+\usepackage{fancyhdr}
+% \renewcommand{\sectionmark}[1]{\markright{#1}{}}
+
+\fancypagestyle{myfancy}{%
+    \fancyhf{}
+    % \fancyhead[R]{\small{Page~\thepage}}
+    \fancyhead[R]{\small{Statistical Inference -- Spring 2023-- \thepage}}
+    \fancyfoot[R]{\footnotesize{Version~of~\input{|"date"}}}
+    % \fancyfoot[R]{\small{\today -- Jake Bowers}}
+    \renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+
+
+\newcommand{\entrylabel}[1]{\mbox{\textsf{#1:}}\hfil}
+
+%% These next lines tell latex that it is ok to have a single graphic
+%% taking up most of a page, and they also decrease the space arou
+%% figures and tables.
+\renewcommand\floatpagefraction{.9} \renewcommand\topfraction{.9}
+\renewcommand\bottomfraction{.9} \renewcommand\textfraction{.1}
+\setcounter{totalnumber}{50} \setcounter{topnumber}{50}
+\setcounter{bottomnumber}{50} \setlength{\intextsep}{2ex}
+\setlength{\floatsep}{2ex} \setlength{\textfloatsep}{2ex}
+
+\specialcomment{com} {\begingroup\sffamily\small\bfseries}{\endgroup}
+\excludecomment{com}
+
+\title{Introduction to the Design and Analysis of Randomized Experiments}
+
+\author{Instructor: Jake Bowers \\
+    jwbowers@illinois.edu \\
+    \url{http://jakebowers.org/}
+}
+
+\date{Escuela de Invierno de Métodos \the\year}
+
+\usepackage[xetex,colorlinks=TRUE,citecolor=blue]{hyperref}
+
+%\renewcommand{\bibname}{ }
+% \renewcommand{\refname}{\normalsize{Required:}}
+%\renewcommand{\refname}{\vspace{-2em}}
+
+\def\themonth{\ifcase\month\or
+        January\or February\or March\or April\or May\or June\or
+    July\or August\or September\or October\or November\or December\fi}
+
+    \begin{document}
+    \pagestyle{myfancy}
+    %\newgeometry{lmargin=1.5in}     % use whatever margins you want for left, right, top and bottom.
+
+ \begin{introstuff}
+
+        \maketitle
+
+        \part*{Overview}
+
+This course introduces the basic statistical concepts that guide the design and
+analysis of randomized experiments. The act of randomizing the assignment of an
+intervention offers special benefits to researchers interested in making
+counterfactual causal inferences, and the course begins by engaging with
+questions about why randomize (or why not randomize) and how randomized
+assignment is not the same as random sampling. It then introduces randomization
+based statistical inference; an approach to calculating standard errors for
+average treatment effect estimates and to calculating $p$-values for tests of
+hypotheses about causal effects. Discusses power analysis, and ends by engaging
+with some of the trickier issues in experimental design and analysis: what to
+do when experimental units drop out of the study or otherwise do not provide
+valid outcomes? how might we think about making causal inferences when the
+active treatment, the treatment of theoretical interest, cannot be directly
+randomized? what to do when we cannot randomly assign treatment directly to
+individual units but only to groups of them? Throughout we will be using the R
+programming language to demonstrate statistical concepts and also as tools for
+designing and analyzing randomized experiments. Most of the examples in the
+class will come from field experiments but given the focus on fundamentals the
+class will be useful for those working with randomized survey experiments and
+randomized lab experiments as well.
+
+I will be open to adding and subtracting topics depending on student interest.
+
+\section{Goals and Expectations}
+
+This class aims to help you get started with the design and analysis of
+randomized experiments using randomization as the basis for statistical
+inference.
+
+The point of the course is to position you to do the future learning
+that is at the core of your work as a researcher. That is,
+for most of your life you will not have classes or even textbooks
+available to help you learn how to work with data and statistics.
+Rather, you will have to learn on your own, with the help of the
+internet, friends, and friendly AI. So, this course aims to help you
+learn how to learn even as it helps you learn how to reason, decide and
+evaluate.
+
+The \textbf{specific goals} of the course are that students:
+
+\begin{itemize}[noitemsep]
+
+    \item Explain in their own words key concepts in statistics like "causal
+        inference","statistical inference", "hypothesis testing", "point
+        estimation", "p-value", "confidence interval", "random assignment", and
+        describe how such concepts fit together in applied research.
+    \item Have practiced coding randomization, power calculations, and statistical analysis
+        of experimental results
+    \item Be familiar with standards and practices for many aspects of reproducible research
+    \item Have practiced developing an experimental research design
+    \item Have practiced created a pre-analysis plan for an experimental design
+
+\end{itemize}
+
+
+\subsection{Readings}
+\begin{verse}
+
+\fullcite{gerber2012field}
+
+\fullcite{bowersVoorsIchino2021book}
+
+\fullcite{blair2023research}
+\end{verse}
+
+I also recommend some chapters from
+\href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt4cgd52}{\cite{glennerster13}},
+which presents material similar to Gerber and Green but less technically.
+Reading this volume alongside Gerber and Green might bring together intuition
+and statistics for some students.
+
+Other readings will be assigned and distributed electronically.
+
+If you're new to \texttt{R} and/or statistics, I suggest getting a hold of:
+\begin{verse}
+    \fullcite{fox2016}
+
+    \fullcite{wickhamgrolemund2017}
+\end{verse}
+
+\subsection{Expectations}
+
+\textbf{Ask questions when you don't understand things; chances are you're not
+alone.}
+
+        I will be open to constructive and concrete suggestions about how to
+        teach the class as we go along, and I will value such evaluations at any
+        point in the class. I have made changes to this course in the middle of
+        the term upon hearing great and useful ideas from students. I am happy
+        to do so.
+
+        I assume some previous engagement with high school mathematics,
+        probability and statistical computing in the R statistical programming
+        language. If you haven't had experience with R but you love learning
+        computing languages then you can still get a lot out of this course ---
+        you will learn a lot about R as kind of laboratory for learning about
+        statistical theory and evaluating and analyzing experimental designs.
+
+        All papers written in this class will use
+        \href{http://www.jakebowers.org/PAPERS/11-BOWERS-RCP-363.pdf}{reproducible
+        and/or literate programming practices} \parencite{bowers2016future} and
+        will include a code appendix.
+
+	All final written work will be turned in as pdf files unless we have
+	another specific arrangement.\footnote{For example, if you have some
+	reason why pdf files make your life especially difficult, then of course I will work with you find another format.}
+
+        All papers written in this class will assume familiarity with the
+        principles of good writing in \textcite{beck:1986}.
+
+        \section{Opportunities for Practice and Learning}
+
+	\textbf{Final project} I'll ask you to apply one or more of the
+	approaches we discuss in class to a paper that you are writing. You can
+	turn in the whole paper or just a method appendix or perhaps a
+	pre-analysis plan using simulated or real data to show how you plan to
+	do an analysis (see \cite[Chap 23 on Planning]{rosenbaum2020book} for
+	more on analysis plans in general for observational studies).
+
+        \section{General Policies and Perspectives}
+
+        \subsection{Grades are Feedback}
+
+        Humans need feedback to close the intention to action gap. They also need
+        feedback to feel good about their progress and to motivate them. In this
+        class I will use grades as feedback. All grades map roughly onto A=satisfactory,
+        C=unsatisfactory, and F=fail (i.e. you didn't try).
+
+        I'll calculate your grade for the course this way: 40\% attendance  ("A" if you show up,
+        ``F'' if not); 30\% weekly work; 30\% final paper.
+
+        You can miss one class and one weekly work without grade penalty.
+
+        Because moments of evaluation are also moments of learning in this
+        class, I do not curve. If you all perform at 100\%, then I will give
+        you all As.
+
+	You can redo any  evaluation or the final paper to increase your grade
+	on that  assignment. If you want to resubmit something already graded,
+	you need  to let me know  in advance so that I can make  time to grade
+	it again. I will take a long time to grade work that I receive after
+	the deadlines: for example, I have taken 6 months or more to grade work
+	turned in after final grades are due at the end of the term.
+
+ \end{introstuff}
+    %\restoregeometry
+
+ \part*{Schedule}
+
+        \textbf{Note: } This schedule is preliminary and subject to change. If
+        you miss a class make sure you contact me or one of your colleagues to
+        find out about changes in the lesson plans or assignments.
+
+\titleformat{\subsection}[hang]{\sffamily\bfseries}{\thesubsection}{}{}{}
+\titleformat{\subsubsection}[hang]{\small\sffamily\bfseries}{\thesubsubsection}{}{}{}
+\titlespacing{\subsection}{0pt}{1.5ex plus .1ex minus .2ex}{0pt}
+
+
+
+\textbf{Session One, May 2:}  Causal inference and the potential outcomes framework
+
+What is causality, the potential outcomes framework, and how do experiments help causal identification?
+
+\begin{itemize}
+    \item \fullcite{gerber12}, ch. 1 and ch. 2, sections 2.1 and 2.2 only.
+    \item \href{https://www-cambridge-org.eui.idm.oclc.org/core/journals/american-political-science-review/article/social-pressure-and-voter-turnout-evidence-from-a-largescale-field-experiment/11E84AF4C0B7FBD1D20C855972C2C3EB}{\fullcite{gerber2008social}}.
+    \item \textbf{Recommended:}  \href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt4cgd52}{\fullcite{glennerster13}, chs. 1--3.}
+    \item \textbf{Recommended:} \href{https://ebookcentral.proquest.com/lib/eui/detail.action?docID=688714}{\fullcite{banerjee2011poor}, ch. 1.}
+    \item \textbf{Recommended:}
+        \href{https://egap.github.io/theory_and_practice_of_field_experiments/causal-inference.html}{\fullcite{bowersVoorsIchino2021book}},
+        Module 3 materials.
+\end{itemize}
+
+
+\textbf{Session Two, May 3:} Random assignment and identification under randomization
+
+Randomization strategies, random sampling versus random assignment, identification under randomization.
+
+\begin{itemize}
+    \item \fullcite{gerber12}, ch. 2, remaining sections
+    \item \href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt21c4v92}{\fullcite{karlan16},} ch. 2 (skim).
+    \item \textbf{Recommended:}  \href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt4cgd52}{\fullcite{glennerster13},} ch. 4.
+    \item \textbf{Recommended:} \href{https://www-cambridge-org.eui.idm.oclc.org/core/journals/world-politics/article/abs/clientelism-and-voting-behavior-evidence-from-a-field-experiment-in-benin/3E386064D15E5E162AEDCEBECB32E8CB}{\fullcite{wantchekon2003clientelism}.}
+    \item \textbf{Recommended:}
+        \href{https://www-jstor-org.eui.idm.oclc.org/stable/42919295?refreqid=excelsior%3A32c7205b7355e1d97bde057069a83600&seq=1}{\fullcite{collier2014votes}.}
+        \item \textbf{Recommended:}
+            \href{https://egap.github.io/theory_and_practice_of_field_experiments/randomization.html}{\fullcite{bowersVoorsIchino2021book}}, Module 4 materials.
+\end{itemize}
+
+\textbf{Session Three, May 4: } Causal inference
+
+Sampling distributions, causal inference, hypothesis testing.
+
+\begin{itemize}
+    \item \fullcite{gerber12}, ch. 3.
+    \item \textbf{Recommended:}
+        \href{https://egap.github.io/theory_and_practice_of_field_experiments/}{\fullcite{bowersVoorsIchino2021book}},
+        Module 5 \& 6 materials.
+\end{itemize}
+
+Statistical power.
+
+\begin{itemize}
+    \item \fullcite{gerber12}, ch. 3.
+    \item \href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt21c4v92}{\cite{karlan16},} ch. 5.
+    \item \textbf{Recommended:}  \href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt4cgd52}{\fullcite{glennerster13},} ch. 6.
+    \item \textbf{Recommended:}
+        \href{https://egap.github.io/theory_and_practice_of_field_experiments/}{\cite{bowersVoorsIchino2021book}},
+        Module 7 materials.
+\end{itemize}
+
+\textbf{Session Four: } Student presentations and feedback
+
+\centerline{\textbf{FE II SYLLABUS}}
+
+        \textbf{Note: } This schedule is preliminary and subject to change. If
+        you miss a class make sure you contact me or one of your colleagues to
+        find out about changes in the lesson plans or assignments.
+
+    \subsection{Useful Reading: About randomized experiments are and their benefits and assumptions}
+
+    *\fullcite{rosenbaum2020book} Sections 2.1--2.4
+
+    *\fullcite[Chap 2--3]{rosenbaum2017}
+
+    *\fullcite[Chap 2--2.4]{rosenbaum2002book} explains and formalizes Fisher's randomization inference.
+
+    *\fullcite[Chap 1--3]{gerber2012field} explains experiments and estimation of average causal effects
+
+    \fullcite[Chap 2]{fisher:1935} explains \emph{the} invention of
+    random-assignment based randomization inference in about 15 pages.
+
+    \fullcite{neyman:1923,rubin1990apt} \emph{the} invention of random-sampling
+    based randomization inference (estimators of the average causal effect and
+    their standard errors).
+
+     \fullcite{bowersleavitt2020} Connects Fisher's test and Neyman's
+     estimator for causal inference.
+
+    \AdvanceDate[7]
+    \section{\themonth~\the\day---Noncompliance/Instrumental Variables}
+
+    \subsection{Topics} If an intervention has been randomized but the active
+    dose has not, what can we do? It turns out that in this case we can
+    estimate Complier Average Causal Effects (CACE) (also known as the Local
+    Average Treatment Effect (LATE)) and we can also test hypotheses about the
+    causal effects of non-randomly taking a dose of a randomized treatment.
+
+\subsection{Useful readings:}
+
+*Chapters 5 and 6 of \fullcite{gerbergreen2012}.
+
+*Chapter 5 and especially Section 5.3, ``Instruments,'' of \fullcite{rosenbaum2020book}
+
+*Chapter 13, ``Instruments'' of \fullcite{rosenbaum2017}
+
+*\fullcite{sovey2011instrumental}
+
+\fullcite{rosenbaum1996}
+
+\fullcite{angristetal1996}
+
+\fullcite{imbensrosenbaum2005} on weak instruments and the problem of 2SLS as an estimator
+
+\fullcite{kangpeckkeele2018}
+
+\fullcite{hansenbowers2009} on a simple design-based approach to what might be
+a two-stage instrumental variables multilevel model with binary outcomes.
+
+    \AdvanceDate[7]
+    \section{\themonth~\the\day---Simple Stratification and Matching}
+
+    \subsection{Topics} Matching methods as a way to do the
+    stratification-based approaches in a way that also allows for assessment of the
+    question: ``Did you adjust enough?''
+
+    \subsection{Useful Reading}
+
+    *\fullcite[Chap 5 and 11]{rosenbaum2017}
+
+    *\fullcite[Chap 1,3,7,8,9,10,14]{rosenbaum2020book} (available via SpringerLink from our library)
+
+    *\fullcite[Chap 9.0--9.2]{gelman2007dau} (on causal inference and especially interpolation and extrapolation)
+
+    *\fullcite{hansen:2004} on full matching for adjustment
+
+    *\fullcite{hansen2008cbs} on assessing balance.
+
+    \fullcite{pashley2020blocked} and \fullcite{miratrix2021multisite} on issues in estimating standard errors and overall average effects after matching
+
+    For matching with more than one level such as children nested within schools see \cite{zubizarreta2012using} or \cite{zubizarreta2017optimal} plus \cite{pimentel2018optimal}.
+
+
+    \AdvanceDate[7]
+    \section{\themonth~\the\day---Stratification Using Many Variables}
+
+    \subsection{Topics} Mahalanobis and propensity scores, calipers, penalties,
+    exact matching. Maybe: fine balance.
+
+    \subsection{Useful Reading} See readings from last week and this overview from Rosenbaum:
+
+    \fullcite{rosenbaum2020}
+
+
+    \AdvanceDate[7]
+    \section*{\themonth~\the\day---No Class}
+
+    Work on projects. Make an appointment to discuss project with Jake on Calendly.
+
+    \AdvanceDate[7]
+    \section{\themonth~\the\day---Stratification When the Intervention is Not Binary}
+
+    \subsection{Topics} Non-bipartite matching.
+
+    \subsection{Useful Reading}
+
+    *\fullcite{rosenbaum2020book}, Chapter 12 on matching without groups
+
+    *\fullcite{rabb2022pnas} This is an example of a published paper using non-bipartite matching.
+
+    \fullcite{zubizarretaetal2013}
+
+    \fullcite{luetal2001}
+
+%    \fullcite{lu2005}
+ %   \fullcite{baiocchietal2010}
+  %  \fullcite{wongetal2012b}
+   % \fullcite{wongetal2020}
+
+
+    \AdvanceDate[7]
+    \section{\themonth~\the\day---Sensitivity Analysis}
+
+    \subsection{Topics} All observational studies leave something out. How big
+    must the influence of the unobserved variable be in order to overturn our
+    substantive results?
+
+    \subsection{Useful Reading}
+
+    *\fullcite{rosenbaum2017}[Chapter 9]
+
+    *\fullcite{rosenbaum2020book}[Chapter 3]
+
+    *\fullcite{cinellihazlett2020}
+
+    \fullcite{hosmanetal2010}
+
+    \fullcite{imbens2003}
+
+   % \fullcite{oster2019}
+
+    \fullcite{rosenbaum2018}
+
+    \fullcite{rosenbaum2009a}
+
+    \fullcite{hansenrosenbaumsmall2014}
+
+     \fullcite{hsusmall2013}
+
+    \fullcite{chaudoin2018we}
+
+    \subsection{Useful reading about sensitivity analysis for weak null hypotheses}
+
+
+ \fullcite{fogarty2023}
+
+ \fullcite{fogarty2020b}
+
+ \fullcite{fogartyetal2017}
+
+
+%    \fullcite{rabb2022pnas}
+
+    \AdvanceDate[7]
+    \section*{\themonth~\the\day---No Class}
+
+    Work on projects. Make an appointment to discuss project with Jake on Calendly.
+
+    \AdvanceDate[7]
+    \section{\themonth~\the\day--- Stratification With Longitudinal Data}
+
+    \subsection{Topics} How to make clear comparisons in pre-post designs, risk-set matching, time-series
+    cross-sectional data, synthetic control methods.
+
+    \subsection{Useful reading}
+
+    *\fullcite{rosenbaum2020book}, Chapter 13
+
+    *\fullcite{rosenbaum2017}, Chapter 11
+
+    TBA
+
+    \AdvanceDate[7]
+    \section{\themonth~\the\day--- No Class}
+
+    \AdvanceDate[7]
+    \section{\themonth~\the\day--- TBD}
+
+    \subsection{Topics} To be decided by the class. Topics could include:  Difference in Differences OR Discontinuity Designs
+
+
+\bigskip
+
+\textbf{Plan to meet with Jake at least once between Oct 25 and when the final paper is
+due.}
+
+    \SetDate[8/12/2023]
+    \section*{\themonth~\the\day---Final Assignment Due}
+    If you would like to turn in your final assignment after this date, please let me
+    know at least a week in advance.
+
+
+    \printbibliography[title=References]
+
+    \end{document}
+
