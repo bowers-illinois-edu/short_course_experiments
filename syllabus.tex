@@ -4,6 +4,9 @@
 \usepackage{enumitem,todonotes}
 \usepackage{sometexdefs}
 
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
 %\usepackage[spanish]{babel}
 \usepackage{fontspec}
 \setmainfont{Fira Sans}
@@ -178,12 +181,14 @@ The \textbf{specific goals} of the course are that students:
 \end{itemize}
 
 
-\subsection{Readings}
-\begin{verse}
+\subsection{Books}
 
+I will recommend that you read chapters from the following books:
+
+\begin{verse}
 \fullcite{gerber2012field}
 
-\fullcite{bowersVoorsIchino2021book}
+\fullcite{bowersVoorsIchino2021book}  \href{https://egap.github.io/theory_and_practice_of_field_experiments_spanish/}{En español}
 
 \fullcite{blair2023research}
 \end{verse}
@@ -196,23 +201,7 @@ and statistics for some students.
 
 Other readings will be assigned and distributed electronically.
 
-If you're new to \texttt{R} and/or statistics, I suggest getting a hold of:
-\begin{verse}
-    \fullcite{fox2016}
-
-    \fullcite{wickhamgrolemund2017}
-\end{verse}
-
-\subsection{Expectations}
-
-\textbf{Ask questions when you don't understand things; chances are you're not
-alone.}
-
-        I will be open to constructive and concrete suggestions about how to
-        teach the class as we go along, and I will value such evaluations at any
-        point in the class. I have made changes to this course in the middle of
-        the term upon hearing great and useful ideas from students. I am happy
-        to do so.
+\subsection{Assumptions}
 
         I assume some previous engagement with high school mathematics,
         probability and statistical computing in the R statistical programming
@@ -221,51 +210,28 @@ alone.}
         you will learn a lot about R as kind of laboratory for learning about
         statistical theory and evaluating and analyzing experimental designs.
 
-        All papers written in this class will use
-        \href{http://www.jakebowers.org/PAPERS/11-BOWERS-RCP-363.pdf}{reproducible
-        and/or literate programming practices} \parencite{bowers2016future} and
-        will include a code appendix.
 
-	All final written work will be turned in as pdf files unless we have
-	another specific arrangement.\footnote{For example, if you have some
-	reason why pdf files make your life especially difficult, then of course I will work with you find another format.}
+If you're new to R and/or statistics, I suggest using books like these or other resources for learning about R and basic statistics online.
 
-        All papers written in this class will assume familiarity with the
-        principles of good writing in \textcite{beck:1986}.
+\begin{verse}
+    \fullcite{fox2016}
 
-        \section{Opportunities for Practice and Learning}
+    \fullcite{wickhamgrolemund2017}
+\end{verse}
 
-	\textbf{Final project} I'll ask you to apply one or more of the
-	approaches we discuss in class to a paper that you are writing. You can
-	turn in the whole paper or just a method appendix or perhaps a
-	pre-analysis plan using simulated or real data to show how you plan to
-	do an analysis (see \cite[Chap 23 on Planning]{rosenbaum2020book} for
-	more on analysis plans in general for observational studies).
 
-        \section{General Policies and Perspectives}
+\subsection{Credits}
 
-        \subsection{Grades are Feedback}
+Those who want to take this course for university credit should plan to create
+a proposal for an experimental design and/or a pre-analysis plan. I recommend
+meeting with me at least once during the week or even before the week of the
+course to discuss this.  I will be presenting a template for research design
+during the class sessions.
 
-        Humans need feedback to close the intention to action gap. They also need
-        feedback to feel good about their progress and to motivate them. In this
-        class I will use grades as feedback. All grades map roughly onto A=satisfactory,
-        C=unsatisfactory, and F=fail (i.e. you didn't try).
+\subsection{Expectations}
 
-        I'll calculate your grade for the course this way: 40\% attendance  ("A" if you show up,
-        ``F'' if not); 30\% weekly work; 30\% final paper.
-
-        You can miss one class and one weekly work without grade penalty.
-
-        Because moments of evaluation are also moments of learning in this
-        class, I do not curve. If you all perform at 100\%, then I will give
-        you all As.
-
-	You can redo any  evaluation or the final paper to increase your grade
-	on that  assignment. If you want to resubmit something already graded,
-	you need  to let me know  in advance so that I can make  time to grade
-	it again. I will take a long time to grade work that I receive after
-	the deadlines: for example, I have taken 6 months or more to grade work
-	turned in after final grades are due at the end of the term.
+\textbf{Ask questions when you don't understand things; chances are you're not
+alone.}
 
  \end{introstuff}
     %\restoregeometry
@@ -280,262 +246,180 @@ alone.}
 \titleformat{\subsubsection}[hang]{\small\sffamily\bfseries}{\thesubsubsection}{}{}{}
 \titlespacing{\subsection}{0pt}{1.5ex plus .1ex minus .2ex}{0pt}
 
-
-
-\textbf{Session One, May 2:}  Causal inference and the potential outcomes framework
+\section{Causal inference and the potential outcomes framework}
+% Maybe Google form before class with favorite randomized experiment.
 
 What is causality, the potential outcomes framework, and how do experiments help causal identification?
+\subsection{Useful readings}
 
 \begin{itemize}
-    \item \fullcite{gerber12}, ch. 1 and ch. 2, sections 2.1 and 2.2 only.
-    \item \href{https://www-cambridge-org.eui.idm.oclc.org/core/journals/american-political-science-review/article/social-pressure-and-voter-turnout-evidence-from-a-largescale-field-experiment/11E84AF4C0B7FBD1D20C855972C2C3EB}{\fullcite{gerber2008social}}.
-    \item \textbf{Recommended:}  \href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt4cgd52}{\fullcite{glennerster13}, chs. 1--3.}
-    \item \textbf{Recommended:} \href{https://ebookcentral.proquest.com/lib/eui/detail.action?docID=688714}{\fullcite{banerjee2011poor}, ch. 1.}
+    \tightlist
+    \item \fullcite{gerber2012field}, Ch 1--3
+    \item \textbf{Application:} A lab experiment: \href{https://journals.sagepub.com/doi/pdf/10.1177/0956797613495244}{\fullcite{aaroe_hunger_2013}} which uses a randomized experiment to follow the nicely designed observational study in  \href{https://doi.org/10.1111/pops.12062}{\fullcite{petersen_social_2014}}
+
+    \item \textbf{Application:} A field experiment: \fullcite{gerber2008social}
+    \item \textbf{Application:} An audit-experiment: \fullcite{bertrand_are_2004}
+
     \item \textbf{Recommended:}
-        \href{https://egap.github.io/theory_and_practice_of_field_experiments/causal-inference.html}{\fullcite{bowersVoorsIchino2021book}},
-        Module 3 materials.
+        \href{https://egap.github.io/theory_and_practice_of_field_experiments/}{\fullcite{bowersVoorsIchino2021book}},
+        Module 1--3 
+    \item \textbf{Recommended:} \fullcite{glennerster13}, chs. 1--3
+    \item \textbf{Recommended:} \fullcite{banerjee2011poor}, ch. 1
+    \item \textbf{Recommended:} \fullcite{rosenbaum2020book} Sections 2.1--2.4
+    \item \textbf{Recommended:} \fullcite[Chap 2--3]{rosenbaum2017}
+    \item \textbf{Recommended:} \fullcite[Chap 2--2.4]{rosenbaum2002book} explains and formalizes Fisher's randomization inference.
+    \item \textbf{Recommended:} \fullcite[Chap 2]{fisher:1935} explains \emph{the} invention of
+    random-assignment based randomization inference in about 15 pages.
+    \item \textbf{Recommended:} \fullcite{neyman:1923,rubin1990apt} \emph{the} invention of random-sampling
+    based randomization inference (estimators of the average causal effect and
+    their standard errors).
+    \item \textbf{Recommended:} \fullcite{bowersleavitt2020} Provides some statistical theory that connects Fisher's test and Neyman's
+     estimator for causal inference.
 \end{itemize}
 
+\section{Random assignment and identification under randomization}
 
-\textbf{Session Two, May 3:} Random assignment and identification under randomization
+How does randomization help us learn about causal effects? Randomization
+strategies (simple, complete, blocked, clustered, etc.), random sampling versus
+random assignment.
 
-Randomization strategies, random sampling versus random assignment, identification under randomization.
+\subsection{Useful readings}
 
 \begin{itemize}
     \item \fullcite{gerber12}, ch. 2, remaining sections
-    \item \href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt21c4v92}{\fullcite{karlan16},} ch. 2 (skim).
-    \item \textbf{Recommended:}  \href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt4cgd52}{\fullcite{glennerster13},} ch. 4.
-    \item \textbf{Recommended:} \href{https://www-cambridge-org.eui.idm.oclc.org/core/journals/world-politics/article/abs/clientelism-and-voting-behavior-evidence-from-a-field-experiment-in-benin/3E386064D15E5E162AEDCEBECB32E8CB}{\fullcite{wantchekon2003clientelism}.}
-    \item \textbf{Recommended:}
-        \href{https://www-jstor-org.eui.idm.oclc.org/stable/42919295?refreqid=excelsior%3A32c7205b7355e1d97bde057069a83600&seq=1}{\fullcite{collier2014votes}.}
+    \item \fullcite{karlan16} ch. 2 (skim).
+    \item \textbf{Recommended:}  \fullcite{glennerster13} ch. 4.
+    \item \textbf{Recommended:} \fullcite{wantchekon2003clientelism}
+    \item \textbf{Recommended:} \fullcite{collier2014votes}
         \item \textbf{Recommended:}
-            \href{https://egap.github.io/theory_and_practice_of_field_experiments/randomization.html}{\fullcite{bowersVoorsIchino2021book}}, Module 4 materials.
+            \fullcite{bowersVoorsIchino2021book}, Module 4 materials on randomization.
 \end{itemize}
 
-\textbf{Session Three, May 4: } Causal inference
+\section{Statistical inference for counterfactual causal effects}
 
-Sampling distributions, causal inference, hypothesis testing.
+More on the statistics of randomized experiments focusing on statistical power
+but reviewing testing and estimation. Sampling distributions, causal inference,
+hypothesis testing and statistical power.
+
+\subsection{Useful readings}
 
 \begin{itemize}
     \item \fullcite{gerber12}, ch. 3.
     \item \textbf{Recommended:}
-        \href{https://egap.github.io/theory_and_practice_of_field_experiments/}{\fullcite{bowersVoorsIchino2021book}},
-        Module 5 \& 6 materials.
-\end{itemize}
-
-Statistical power.
-
-\begin{itemize}
-    \item \fullcite{gerber12}, ch. 3.
-    \item \href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt21c4v92}{\cite{karlan16},} ch. 5.
-    \item \textbf{Recommended:}  \href{https://www-jstor-org.eui.idm.oclc.org/stable/j.ctt4cgd52}{\fullcite{glennerster13},} ch. 6.
+        \fullcite{bowersVoorsIchino2021book}, Module 5 \& 6 materials on hypothesis testing and estimation.
+    \item \cite{karlan16} ch. 5.
+    \item \textbf{Recommended:}  \fullcite{glennerster13} ch. 6.
     \item \textbf{Recommended:}
         \href{https://egap.github.io/theory_and_practice_of_field_experiments/}{\cite{bowersVoorsIchino2021book}},
         Module 7 materials.
 \end{itemize}
 
-\textbf{Session Four: } Student presentations and feedback
 
-\centerline{\textbf{FE II SYLLABUS}}
+\section{Clustered and blocked designs and power}
 
-        \textbf{Note: } This schedule is preliminary and subject to change. If
-        you miss a class make sure you contact me or one of your colleagues to
-        find out about changes in the lesson plans or assignments.
+How to think about designs where the researchers cannot directly administer a
+treatment to an individual unit of interest (cluster randomization)?  And/or
+why we might construct an overall experiment from a set of mini-experiments
+(blocking or stratification)?
 
-    \subsection{Useful Reading: About randomized experiments are and their benefits and assumptions}
+% Natalia already discussed these designs and randomization for them. Use
+% blocking and clustering to discuss power.
 
-    *\fullcite{rosenbaum2020book} Sections 2.1--2.4
+% Main lecture: Nahomi and Maarten
+% Review why blocking, why cluster-randomization, costs and benefits
+% Rwanda One example
 
-    *\fullcite[Chap 2--3]{rosenbaum2017}
+% Small groups (30 min):
+% apply concepts to the 2nd paper (Maarten paper)
+% How are the papers dealing with blocks and
+% clusters? Core assumptions from Day 1 to flag?
+% Small groups link papers to concepts ("How many blocks? How many clusters? Why
+% cluster? Why block?"
 
-    *\fullcite[Chap 2--2.4]{rosenbaum2002book} explains and formalizes Fisher's randomization inference.
+\subsection{Useful readings}
 
-    *\fullcite[Chap 1--3]{gerber2012field} explains experiments and estimation of average causal effects
+\begin{itemize}
+    \tightlist
+    \item \fullcite{gerber12}, ch.8, Sections 8.1--8.3 only
+    \item \href{https://www.journals.uchicago.edu/doi/pdfplus/10.1017/S0022381611001368}{\fullcite{ichino2012deterring}}
+        % Blocking not clustering
+        % Careful attention to the estimands
+    \item \href{https://doi.org/10.1093/qje/qjaa039}{\fullcite{christensen_building_2021}}
+        % Multiple levels, polygons and randomization
+        % Mahalnobis distance triple (cite Moore)
+   % \item \textbf{Recommended:} Pre-analysis plan for Christensen et al.~(2021)
+\end{itemize}
 
-    \fullcite[Chap 2]{fisher:1935} explains \emph{the} invention of
-    random-assignment based randomization inference in about 15 pages.
+% Recommended:
 
-    \fullcite{neyman:1923,rubin1990apt} \emph{the} invention of random-sampling
-    based randomization inference (estimators of the average causal effect and
-    their standard errors).
+%\item \fullcite{paluck_deference_2009}
+% Notes on paluck etc lots of kinds of measurement, behavioral outcome
+% 14 clusters, 40 people per cluster, 7 pairs.
+% Different test statistics
 
-     \fullcite{bowersleavitt2020} Connects Fisher's test and Neyman's
-     estimator for causal inference.
 
-    \AdvanceDate[7]
-    \section{\themonth~\the\day---Noncompliance/Instrumental Variables}
+\section{Maybe: Survey experiments}
 
-    \subsection{Topics} If an intervention has been randomized but the active
+We could spend a session focusing on some of the challenges and opportunities
+posed by randomized experiments embedded within surveys.
+
+% Main lecture: Jake (Maarten and Nahomi assigned to do tasks/parts)
+
+% Issues of Interpretation
+% complex noncompliance (mediation, defiers, etc..)
+% spillovers
+% attrition
+% factorial designs
+% survey experiments
+
+% Allan Dafoe, Baobao Zhang, and Devin Caughey. “Information equivalence in survey experiments”. In: Political Analysis 26.4 (2018), pp. 399–416
+
+\subsection{Useful readings}
+
+% Readings
+\begin{itemize}
+    \tightlist
+    \item \href{https://gustavodiaz.org/files/research/sage_survey_experiments_chapter.pdf}{\fullcite{diazsurvey2020}}
+    \item \href{https://egap.org/resource/10-things-to-know-about-survey-experiments/}{\fullcite{grady2019survey}}
+    \item \fullcite{teele_ties_2018}
+    \item \textbf{Recommended:} \fullcite{gaines2007logic}
+    \item \textbf{Recommended:} \fullcite{winters2013lacking} and \fullcite{boas2019norms} and \fullcite{incerti2020corruption}.
+\end{itemize}
+
+
+% Exercises
+
+    \section{Maybe: Causal effects of non-random compliance with randomized interventions}
+
+    If an intervention has been randomized but the active
     dose has not, what can we do? It turns out that in this case we can
     estimate Complier Average Causal Effects (CACE) (also known as the Local
     Average Treatment Effect (LATE)) and we can also test hypotheses about the
     causal effects of non-randomly taking a dose of a randomized treatment.
 
-\subsection{Useful readings:}
-
-*Chapters 5 and 6 of \fullcite{gerbergreen2012}.
-
-*Chapter 5 and especially Section 5.3, ``Instruments,'' of \fullcite{rosenbaum2020book}
-
-*Chapter 13, ``Instruments'' of \fullcite{rosenbaum2017}
-
-*\fullcite{sovey2011instrumental}
-
-\fullcite{rosenbaum1996}
-
-\fullcite{angristetal1996}
-
-\fullcite{imbensrosenbaum2005} on weak instruments and the problem of 2SLS as an estimator
-
-\fullcite{kangpeckkeele2018}
-
-\fullcite{hansenbowers2009} on a simple design-based approach to what might be
-a two-stage instrumental variables multilevel model with binary outcomes.
-
-    \AdvanceDate[7]
-    \section{\themonth~\the\day---Simple Stratification and Matching}
-
-    \subsection{Topics} Matching methods as a way to do the
-    stratification-based approaches in a way that also allows for assessment of the
-    question: ``Did you adjust enough?''
-
-    \subsection{Useful Reading}
-
-    *\fullcite[Chap 5 and 11]{rosenbaum2017}
-
-    *\fullcite[Chap 1,3,7,8,9,10,14]{rosenbaum2020book} (available via SpringerLink from our library)
-
-    *\fullcite[Chap 9.0--9.2]{gelman2007dau} (on causal inference and especially interpolation and extrapolation)
-
-    *\fullcite{hansen:2004} on full matching for adjustment
-
-    *\fullcite{hansen2008cbs} on assessing balance.
-
-    \fullcite{pashley2020blocked} and \fullcite{miratrix2021multisite} on issues in estimating standard errors and overall average effects after matching
-
-    For matching with more than one level such as children nested within schools see \cite{zubizarreta2012using} or \cite{zubizarreta2017optimal} plus \cite{pimentel2018optimal}.
-
-
-    \AdvanceDate[7]
-    \section{\themonth~\the\day---Stratification Using Many Variables}
-
-    \subsection{Topics} Mahalanobis and propensity scores, calipers, penalties,
-    exact matching. Maybe: fine balance.
-
-    \subsection{Useful Reading} See readings from last week and this overview from Rosenbaum:
-
-    \fullcite{rosenbaum2020}
-
-
-    \AdvanceDate[7]
-    \section*{\themonth~\the\day---No Class}
-
-    Work on projects. Make an appointment to discuss project with Jake on Calendly.
-
-    \AdvanceDate[7]
-    \section{\themonth~\the\day---Stratification When the Intervention is Not Binary}
-
-    \subsection{Topics} Non-bipartite matching.
-
-    \subsection{Useful Reading}
-
-    *\fullcite{rosenbaum2020book}, Chapter 12 on matching without groups
-
-    *\fullcite{rabb2022pnas} This is an example of a published paper using non-bipartite matching.
-
-    \fullcite{zubizarretaetal2013}
-
-    \fullcite{luetal2001}
-
-%    \fullcite{lu2005}
- %   \fullcite{baiocchietal2010}
-  %  \fullcite{wongetal2012b}
-   % \fullcite{wongetal2020}
-
-
-    \AdvanceDate[7]
-    \section{\themonth~\the\day---Sensitivity Analysis}
-
-    \subsection{Topics} All observational studies leave something out. How big
-    must the influence of the unobserved variable be in order to overturn our
-    substantive results?
-
-    \subsection{Useful Reading}
-
-    *\fullcite{rosenbaum2017}[Chapter 9]
-
-    *\fullcite{rosenbaum2020book}[Chapter 3]
-
-    *\fullcite{cinellihazlett2020}
-
-    \fullcite{hosmanetal2010}
-
-    \fullcite{imbens2003}
-
-   % \fullcite{oster2019}
-
-    \fullcite{rosenbaum2018}
-
-    \fullcite{rosenbaum2009a}
-
-    \fullcite{hansenrosenbaumsmall2014}
-
-     \fullcite{hsusmall2013}
-
-    \fullcite{chaudoin2018we}
-
-    \subsection{Useful reading about sensitivity analysis for weak null hypotheses}
-
-
- \fullcite{fogarty2023}
-
- \fullcite{fogarty2020b}
-
- \fullcite{fogartyetal2017}
-
-
-%    \fullcite{rabb2022pnas}
-
-    \AdvanceDate[7]
-    \section*{\themonth~\the\day---No Class}
-
-    Work on projects. Make an appointment to discuss project with Jake on Calendly.
-
-    \AdvanceDate[7]
-    \section{\themonth~\the\day--- Stratification With Longitudinal Data}
-
-    \subsection{Topics} How to make clear comparisons in pre-post designs, risk-set matching, time-series
-    cross-sectional data, synthetic control methods.
-
-    \subsection{Useful reading}
-
-    *\fullcite{rosenbaum2020book}, Chapter 13
-
-    *\fullcite{rosenbaum2017}, Chapter 11
-
-    TBA
-
-    \AdvanceDate[7]
-    \section{\themonth~\the\day--- No Class}
-
-    \AdvanceDate[7]
-    \section{\themonth~\the\day--- TBD}
-
-    \subsection{Topics} To be decided by the class. Topics could include:  Difference in Differences OR Discontinuity Designs
-
-
-\bigskip
-
-\textbf{Plan to meet with Jake at least once between Oct 25 and when the final paper is
-due.}
-
-    \SetDate[8/12/2023]
-    \section*{\themonth~\the\day---Final Assignment Due}
-    If you would like to turn in your final assignment after this date, please let me
-    know at least a week in advance.
-
-
-    \printbibliography[title=References]
-
-    \end{document}
+Instrumental variables and the placebo controlled design and experiments built
+on previously executed randomizations (downstream experiments).
+
+\subsection{Useful readings}
+\begin{itemize}
+    \tightlist
+    \item \fullcite{gerber12}, ch. 5
+    \item \href{https://doi.org/10.1111/ecca.12168}{\fullcite{friedman_education_2016}} (Instrumental variables) % try to find something from Latin America?
+    \item \href{https://www-cambridge-org.eui.idm.oclc.org/core/services/aop-cambridge-core/content/view/S0003055419000923}{\fullcite{kalla_reducing_2020}} (A placebo, control, treatment)
+    \item Chapters 5 and 6 of \fullcite{gerbergreen2012}.
+    \item Chapter 5 and especially Section 5.3, ``Instruments,'' of \fullcite{rosenbaum2020book}
+    \item Chapter 13, ``Instruments'' of \fullcite{rosenbaum2017}
+    \item \fullcite{sovey2011instrumental}
+    \item \fullcite{rosenbaum1996}
+    \item \fullcite{angristetal1996}
+    \item \fullcite{imbensrosenbaum2005} on weak instruments and the problem of 2SLS as an estimator
+    \item \fullcite{kangpeckkeele2018}
+\end{itemize}
+
+\section{Maybe: Student presentations of experimental research designs and/or pre-analysis plans}
+\newpage
+
+\printbibliography[title=References]
+
+\end{document}
 
