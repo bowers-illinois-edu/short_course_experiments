@@ -20,6 +20,11 @@ header-includes: |
   \usepackage{bookmark}
   \setbeamertemplate{footline}{\begin{beamercolorbox}{section in head/foot}
   \insertframenumber/\inserttotalframenumber \end{beamercolorbox}}
+  \setbeamertemplate{itemize item}[circle]
+  \setbeamertemplate{itemize subitem}[triangle]
+  \setbeamertemplate{itemize subitem}{\raisebox{0.2em}{\scalebox{1}{$\blacktriangleright$}}}
+  \setbeamersize{description width=2ex}
+  \setbeamersize{text margin left=1ex,text margin right=1ex}
   \usepackage{tikz}
   \usepackage{tikz-cd}
   \usepackage{textpos}
@@ -75,51 +80,31 @@ colorize <- function(x, color) {
 
 **At the end be able to answer questions like:**
 
-- **Why choose a randomized experiment?** <!-- What are the benefits of randomized experiments? When might we want to
-  randomize and when might we not want to randomize?  -->
-- **What is a counterfactual
-  quantity and why might we care about this?**
-<!-- What are we trying to learn about from a randomized experiment? (Typically.)
-  How does calculating averages within an experimental pool help us learn about
-  unobserved counterfactual quantities? How do hypotheses tests also help us
-  learn about unobserved counterfactual quantities?  -->
+- **Why choose a randomized experiment?**
+- **What is a counterfactual quantity and why might we care about this?**
  - How can we randomize using R?
- - **Why test? Why estimate? How test and estimate? What is randomization based inference and why should we care?**
- How can we use R to test hypotheses about
-   counterfactual quantities? How can we use R to estimate average causal
+ - **Why test? Why estimate? How test and estimate? What is randomization based
+   inference and why should we care?** How can we use R to test hypotheses
+   about counterfactual quantities? How can we use R to estimate average causal
    effects (differences of averages of counterfactual quantities)?
  - How might we know when it is worth randomizing and when it is not?
    (Statistical power) **What is statistical power? Why should we care?**
+
+## Overview of the class {.allowframebreaks}
  - How should we make choices about certain common designs:
-   - Why might one randomize within strata? What does this imply for analysis and
-   interpretation?
-   - Why might one randomize an intervention to groups or clusters of units? What
-   does this imply for analysis and interpretation?
+   - Why might one randomize within strata? What does this imply for analysis
+     and interpretation?
+   - Why might one randomize an intervention to groups or clusters of units?
+     What does this imply for analysis and interpretation?
    - How might we use randomization to learn about the effects of interventions
-  even when we cannot control who receives a full dose of the treatment?
-  (LATE/CACE)
+     even when we cannot control who receives a full dose of the treatment?
+     (LATE/CACE)
 
-<!--
-## Overview of the class {.shrink}
-
-- We **infer** about counterfactual causal mechanisms by **estimating** and
-  **testing**: *Causal inference (in this class) requires statistical
-  inference.*
-- Statistical inference requires **distributions** (we cannot know whether an
-  estimator is unbiased without an idea of a distribution, we cannot calculate
-  a $p$-value without a distribution, etc.)
-- Distributions require **thought experiments** about repetition: We  *imagine*
-  that we could (a) re-draw random samples from a the same population or (b)
-  re-assign randomized treatment. (We can also imagine reusing our priors and
-  likelihood.)
-- We will use the fact that distributions of certain test statistics is **known
-  for randomized experiments** to (a) answers questions about whether this
-  research design answers the questions we want or not and  (b) analyze outcomes.
--->
+**Overall: This class is for you. Please ask questions!**
 
 ##  Today
 
- .1. Introductions and our projects (An experiment you are planning, an
+  1. Introductions and our projects (An experiment you are planning, an
  experiment you'd like to do, an experiment you are doing, an experiment you
  have done.)
   2. Why experiment?
@@ -160,6 +145,12 @@ My main experience is with policy experiments.
  - https://thepolicylab.brown.edu
  - https://egap.org
  - https://thelabprojects.dc.gov
+
+## Class introductions
+
+ - Name
+ - Where are you currently studying/working?
+ - Possible/Existing randomized experiment?
 
 
 # Experiments in context: Research questions, theories, and research designs
@@ -278,6 +269,138 @@ share health information.
 
  - Good designs tick all the boxes and give readers reason to believe the results.
 
+ - Not all randomized experiments are good designs. And not all good designs are randomized experiments.
+
+# Why experiment?
+
+
+## Policy experiments
+
+A method for: \medskip
+
+- Putting beliefs about what works to the test
+- Enabling policy decisions based on data
+
+## An example experiment (Wantchekon et al)
+
+- Question: are programmatic policies or clientelistic policies more effective at mobilizing voters?
+- Why we care: Programmatic policies can be more equitable, pro-poor
+- Idea: politicians believe clientelistic policies are more effective -- and maybe they would change campaigns if they knew they were wrong
+- Research partner: four main parties in Benin
+- Intervention: programmatic policy or clientelistic policy promoted by party at election rallies in a district
+- Experimental design: campaign randomly assigned to districts
+- Outcome: vote share for the party
+- Results: on average voters prefer clientelistic campaigns, but women more likely to prefer programmatic policies
+
+## An example experiment (Wantchekon et al)
+
+Random assignment $\rightarrow$ **highly credible evidence** and **easy to
+interpret evidence** that the change to messages at rallies led to a change in
+vote share \bigskip
+
+If politicians believe results $\rightarrow$ decide to change campaigns
+
+
+## Long history of the method
+
+
+- Late 1700s, early 1800s: early double-blind experiments with comparison group (not randomized)
+- 1920s: first randomized experiments in agriculture, education, and political science
+- 1965: first clinical randomized trial (Streptomycin for TB)
+- 2019: Nobel prize for popularizing randomized experiments in economics
+
+## Widespread use
+
+
+- Clinical trials required by regulators for vaccines, medicines, and treatments
+- Political campaigns test mobilization and persuasion strategies
+- Tech companies test website features to find most lucrative ones
+- Governments test policies using RCTs
+
+## Opposing existing beliefs I (EGAP Accountability Metaketa, Dunning et al)
+
+- Belief: providing information about incumbent politicians will change votes
+- Intervention: information about politicians' corruption, job attendance
+- Experimental design: randomly assign districts to receive information or not
+- Outcome: vote share for incumbent (administrative data)
+- Result: no effect
+
+
+## Oppositing existing beliefs II
+
+- Belief: local democratic institutions improve delivery of development aid
+- Partner: International Rescue Committee,CARE
+- Intervention: two years of democratic institutions and development program
+- Experimental design: randomly assign village clusters to treatment or not
+- Outcomes: corruption, government practices chosen after intervention
+- Result: no change
+
+
+## Opposing existing beliefs III (EGAP Community Policing Metaketa)
+
+- Belief: engagement between police & citizens improves trust, lowers crime
+- Partner: Police agencies in six countries
+- Intervention: "community policing" (townhalls, beat patrols, etc.)
+- Experimental design: randomly assign police beats to receive/not
+- Outcomes: citizen trust in and cooperation with police, crime
+- Result: no change in any main outcome
+
+
+## Supporting existing theories beliefs
+
+- Belief: conditional cash transfers change behavior, improve welfare
+- Partner: Mexico public health ministry
+- Intervention: cash to mothers conditioned on children attending school, going to health clinics
+- Experimental design: first phase of rollout randomly assigned to communities
+- Outcomes: poverty, school attendance, health
+- Result: improvements in every outcome
+
+
+Incomplete list of places with CCTs following this Progresa study:\bigskip
+
+Argentina, Bangladesh, Brazil, Cambodia, Chile, Colombia, Egypt, Guatemala,
+Honduras, Indonesia, Jamaica, Mexico, Nicaragua, Panama, Peru, Philippines,
+Turkey, US
+
+
+## Limitations to experiments
+
+Some questions don't need an experiment\medskip
+
+- Does smoking cause poor health? (This took many years of observational
+  studies including laboratory and epidemiology studies)
+- Do parachutes help when you jump out of a plane? (Back to theory \ldots)
+
+## Limitations to experiments
+
+Some questions shouldn't have an experiment \medskip
+
+- Does changing the interest rate affect inflation?
+- Were the funds from the American Rescue Plan distributed equitably?
+- What is the poverty rate?
+- Why didn't information affect accountability? Why didn't community policing change trust?
+
+Important role for descriptive research, theory generation, qualitative
+investigation
+
+
+## Limitations to experiments
+
+- Ethics --- is this sort of manipulation ethical? Sometimes not.
+
+- Must be done in real time, ahead of the intervention roll-out. (Can't run a
+  new randomized experiment on data that has already been collected.)
+
+- Reduced flexibility for a partner organization (problem for any prospective evaluation).
+
+- Maybe Cost if it implies more administration and/or new measurement.
+
+## Why experiments
+
+
+ - Put beliefs about effects of policies to the test.
+ - Offer clear evidence for and/or against existing theories.
+
 # Experiments and the Counterfactual Approach to Causal Inference
 
 ## Experiments and Counterfactual Causal Inference
@@ -291,7 +414,7 @@ Each plot either receives the fertilizer or status quo.
 What does it mean for fertilizer to **cause** more corn to grow? Perhaps
 someone suggests a causal mechanism (fertilizer $\rightarrow \ldots \rightarrow
 $ corn)? Perhaps someone suggests another mechanism that does not involve
-fertilizer (?sun light? ?prayer?)
+fertilizer (?sun light? ?music?)
 
 How to provide evidence about the causal mechanism? One implication of the
 theory: if the plot of land had not received fertilizer, then less corn would
@@ -305,23 +428,25 @@ have grown.
 
 - It's not wrong to _conceptualize_ "cause" in another way (for example,
   whenever I see fertilized fields, I expect more corn.). But the
-  counterfactual framework has make discussion of the design and analysis of
+  counterfactual framework has made discussion of the design and analysis of
   experiments easier [@brady2008causation].
 
 - For example, we can have mechanistic explanation linking fertilizer to corn
-  growth but also a covering law theory. The counterfactual idea helps us
-  relate specific implications to specific observations.
+  growth (fertilizer does something to the corn cells to trigger increased
+  growth) but also a covering law theory (without nutrients, corn cannot grow).
+  The counterfactual idea helps us relate specific implications to specific
+  observations.
 
 
 ## How to interpret "X causes Y" in this approach
 
-1.  "X causes Y" need not imply that other variables W and V do not cause Y: X is a part of the story, not the whole story. (The whole story is not necessary in order to learn about whether X causes Y).
+1.  "X causes Y" need not imply that other variables W and V do not cause Y: X is a part of the story, not the whole story. (The whole story is not necessary in order to learn about whether X causes Y). Music could be a part of the cause. Or sunlight.
 
-2.  "X causes Y" requires a **context**: matches cause flame but require oxygen; small classrooms improve test scores but require experienced teachers and funding [@cartwright2012evidence].
+2.  "X causes Y" requires a **context**: matches cause flame but require oxygen; small classrooms improve test scores but require experienced teachers and funding [@cartwright2012evidence]; corn requires soil and oxygen and reasonable temperatures.
 
 3. "X causes Y" can mean "With X, the probability of Y is higher than would be without X." or "Without X there is no Y." Either is compatible with the counterfactual idea.
 
-4.  It is not necessary to know the mechanism to establish that X causes Y. The mechanism can be complex, and it can involve probability: X causes Y sometimes because of A and sometimes because of B.
+4.  It is not necessary to know the mechanism to establish that X causes Y. The mechanism can be complex, and it can involve probability: X causes Y sometimes because of A and sometimes because of B. (In fact, in science we often have "X causes Y" and then decades of research work to narrow down the causal mechanism.)
 
 ## Exercise: Colds and Honey
 
@@ -334,11 +459,9 @@ have grown.
    colds, would that confirm the causal claim? What other counterfactuals might
    be possible and why?
 
-# Potential Outcomes
-
 ## Potential outcomes notation for counterfactual causal effects
 
-- Given two possible treatments, for each unit we assume that there are two **post-treatment** outcomes: $Y_i(1)$ and $Y_i(0)$.
+- Given two possible treatments, for each unit we formalize the simple versin of the counterfactual idea by writing that there are two **post-treatment** outcomes: $Y_i(1)$ and $Y_i(0)$.
 
 - $Y_i(1)$ is the outcome that **would** obtain *if* the unit received the treatment ($T_i=1$).
 
@@ -391,47 +514,190 @@ $Y_i = T_iY_i(1) + (1-T_i)Y_i(0)$
 - But we only have at most one potential outcome for each individual, which means we don't directly see these treatment effects. We can only **infer** them.
 
 
-## Average causal effect
+# Concepts and Notation for Causal Inference and Statistical Inference
 
- - While we can't measure the individual causal effect, $\tau_i = Y_i(1)-Y_i(0)$, we can randomly assign subjects to treatment and control conditions to estimate the **average causal effect**, $\bar{\tau}_i$:
+## Notation and Concepts for Counterfactual Causal Inference {.shrink}
 
-\centering
-$\overline{\tau_i} = \frac{1}{N} \sum_{i=1}^N ( Y_i(1)-Y_i(0) ) = \overline{Y_i(1)-Y_i(0)}$
+  - *Treatment* or *Intevention*  $Z_i=1$ for treatment and $Z_i=0$ for control
+    for units $i$. (We mostly assume that all units **could have** $Z_i=1$ or
+    $Z_i=0$. That it is not impossible for any unit to have either value.) (Q:
+    What is a unit? Examples of interventions?)
+
+  - Each unit has a pair of *potential outcomes* $(y_{i,Z_i=1},y_{i,Z_i=0})$
+    (also written  $(y_{i,1},y_{i,0})$ ) (given the Stable Unit Treatment Value
+    Assumption (SUTVA)).
+    - Without the SUTVA assumption, and with 4 units, with two having $Z_i=1$,
+      unit $i=1$ would have the following potential outcomes:
+      $(y_{i,1100},y_{i,1010},y_{i,1001},y_{i,0101},y_{i,0011})$
+  - *Causal Effect under SUTVA*  when $y_{i,1} \ne y_{i,0}$, $\tau_i   =
+    f(y_{i,1},y_{i,0})$ ex. $\tau_i =  y_{i,1} - y_{i,0}$.
+
+  - *Fundamental Problem of (Counterfactual) Causality* We only see one
+    potential outcome $Y_i = Z_i * y_{i,1} + (1-Z_i) y_{i,0}$ (Examples:
+    Argentina having elected Mieli versus not? Chile under a new constitution
+    versus not?)
+
+  - *Covariates*,  $\mathbf{X}=\begin{bmatrix} x_{11} & \ldots & x_{1k} \\ \vdots &
+    \vdots & \vdots \\  x_{n1} & \ldots & x_{nk} \end{bmatrix}$ is a matrix
+    containing  background information about the units that might predict
+    $(y_{i,1},y_{i,0})$ or $Z$ (but that don't predict $Z$ if $Z$ is randomized
+    as in an experiment).
+
+## The observation and unobserved causal comparisons
+
+We can learn about unobserved but theorized causal mechanisms by observing the world [@brady2008cae]:
+
+- **Persistent association** "We always/mostly see $Y=1$ when $X=1$ and $Y=0$
+  when $X=0$."
+- **Counterfactual Difference** "If  $X$ had not been this value, then $Y$
+  would not have been that value."
+- **Difference after manipulation** "When we change $X$ from one value to
+  another value, then $Y$ changes from one value to another value."
+  (establishes causal priority of $X$ over $Y$, implied that $Y$ would not have
+  changed.).
+- **Difference after operation of a mechanism** "Once upon a time $A$ changed
+  $X$, and then one day $X$ changed $B$, and because of that $B$ changed $C$,
+  and finally $C$ changed $Y$."
+
+All approaches are useful. This week we are focusing on the counterfactual approach.
+
+```{r, echo=FALSE, results="hide"}
+set.seed(12345)
+honeydat <- data.frame(x1=c(1,1,2,3,1,0,0,0,0,2),
+    x2=sample(1:9,size=10,replace=TRUE))
+honeydat$Zlat <- with(honeydat,.5*x1 + runif(10))
+honeydat$Z <- as.numeric(honeydat$Z > median(honeydat$Z))
+## honeydat$y0 <- with(honeydat,x1+x2+Z+rpois(10,lambda=5))
+honeydat$y0 <- with(honeydat, x1 + .25*x1^2+rpois(10,lambda=8))
+summary(lm(y0~x1+x2,data=honeydat))
+## cor(honeydat[,c("x1","x2","Z","y0")])
+honeydat$Zlat <- NULL
+honeydat$y1 <- with(honeydat,y0 - c(1,1,2,3,1,0,0,0,0,2))
+honeydat$Y <- with(honeydat,y1*Z + y0*(1-Z))
+with(honeydat,mean(Y[Z==1]) - mean(Y[Z==0]))
+honeydat$tau <- honeydat$y1 - honeydat$y0
+honeydat$id <- 1:10
+dat <- honeydat[,c("id","x1","x2","y0","y1","tau")]
+```
 
 
- - The average causal effect is also known as the average treatment effect (ATE).
+## Randomization in Action: Honey and Colds {.shrink}
 
- - Further explanation on how after we discuss randomization of treatment assignment.
+Your friend explains a causal mechanism that eating raw honey reduces the
+duration of colds. What kinds of **alternative** explanations might we come up
+with for this result?
+
+Imagine these were the underlying potential outcomes with two covariates $x_1$ and $x_2$
+representing two of those explanations and that $x_1 \rightarrow y_0$ and that
+$x_2 \not \rightarrow y_0$. (Say, $x_2$ is "reading the newspaper" and $x_1$ is "going often to the doctor")
+
+```{r}
+kable(dat)
+```
+
+The true, unobserved, average (additive) causal effect is: `r with(honeydat, mean(y1-y0))`.
+
+Let us run a randomized experiment and see how we do:
+
+## An RCT:
+
+Let's imagine that we randomized honey to 5 of the people in the friendship group. How would we know whether
+`complete_ra` worked as it should? (First we asked ChatGPT what `complete_ra` does!)
+
+```{r, echo=TRUE}
+library(randomizr)
+set.seed(12345)
+dat$Z <- complete_ra(N=10,m=5)
+dat$Y <- with(dat,Z*y1 + (1-Z)*y0)
+```
 
 
-## Estimands and causal questions
+## An RCT:
 
-- Before we discuss randomization and how that allows us to estimate the ATE, note that the ATE is a type of estimand or aggregation of individual level causal effects.
+We see the potential outcomes (`y0` and `y1`) because this is a simulation. In
+general, we only see `Y` and `Z` and the covariates `x1` and `x2`.
 
-- An estimand is a quantity you want to learn about (from your data).  It's the target of your research that *you* set. The ATE is a common estimand. Another might be the difference in log odds:
+```{r}
+kable(dat)
+```
 
-  \begin{equation}
-  \log\left( \frac{\bar{Y}_i(1)}{1 - \bar{Y}_i(1)} \right) - \log\left( \frac{\bar{Y}_i(0)}{1 - \bar{Y}_i(0)} \right)
-  \end{equation}
+## Assessing randomization {.allowframebreaks}
 
-- Being precise about your research question means being precise about which summaries of potential outcomes you want to learn about. For causal questions, this means specifying:
-   - The outcome
-   - The treatment and control conditions
-   - The study population
+We expect that the distributions of $x_1$ and $x_2$ would be (nearly) the same
+between the treated and control groups. But how nearly the same? We write "0"
+below, but in fact, randomization does not make those relationships exactly 0.
 
-## Other types of estimands you may be interested in
+\begin{center}
+\begin{tikzcd}[column sep=large]
+	  Z  \arrow[from=1-1,to=1-4] &    &    & Y \\
+	   x_1 \arrow[from=2-1,to=1-1, "\text{0 if $Z$ is randomized}"] \arrow[from=2-1,to=1-4] & & &
+	   x_2 \arrow[from=2-4,to=1-1, "\text{0 if $Z$ is randomized}",sloped] \arrow[from=2-4,to=1-4]
+\end{tikzcd}
+\end{center}
 
-- The ATE for a particular subgroup, aka conditional average treatment effect (CATE)
+Here, just looking at means:
+```{r, echo=TRUE}
+dat %>% group_by(Z) %>% reframe(mnx1=mean(x1),mnx2=mean(x2))
+```
 
-- Differences in CATEs:  differences in the average treatment effect for one group as compared with another group.
+```{r, echo=TRUE}
+library(RItools)
+bal1 <- balanceTest(Z~x1+x2,data=dat)
+bal1$results[,1:4,]
+```
 
-- The ATE for just the treated units, aka ATT (average treatment effect on the treated)
+Is this what we should expect from a well-conducted experiment? Have we messed
+up the code?
 
-- The local ATE (LATE).  "Local" = those whose treatment status would be changed by an encouragement in an encouragement design (aka CACE, complier average causal effect) or those in the neighborhood of a discontinuity for a regression discontinuity design.
+## What **should** we expect from an experiment?
 
-- Estimands and estimators are discussed in detail tomorrow.
+...in regards covariate balance? Lets simulate to learn: (let's explain this code)
 
-# Randomization of treatment assignment
+```{r, echo=TRUE}
+new_exp <- function(Z){
+	newZ <- sample(Z)
+	return(newZ)
+}
+diff_means <- function(x,Z){
+	mean(x[Z==1]) - mean(x[Z==0])
+}
+all_cov_bal<- replicate(10000,diff_means(x=dat$x1,
+					Z=new_exp(dat$Z)))
+summary(all_cov_bal)
+obs_cov_bal <- diff_means(dat$x1,dat$Z)
+obs_cov_bal
+```
+
+## What **should** we expect from an experiment?
+
+So:
+
+1. experiments do not guarantee exact equality of covariates and
+2. we can **know** (or closely approximate) what kind of covariate differences
+   a given experimental design would generate.
+
+
+```{r, echo=TRUE}
+obs_cov_bal
+quantile(all_cov_bal,seq(0,1,.1))
+sd(all_cov_bal)
+```
+
+
+## What **should** we expect from an experiment?
+
+1. experiments do not guarantee exact equality of covariates and
+2. we can **know** (or closely approximate) what kind of covariate differences
+   a given experimental design would generate.
+
+These are the ways that the difference in mean `x1` can occur in our randomized
+design.
+
+```{r}
+plot(table(all_cov_bal),type="h")
+```
+
+# Random assignment vs Random sampling 
 
 ## Randomization of treatment assignment
 
@@ -446,7 +712,7 @@ $\overline{\tau_i} = \frac{1}{N} \sum_{i=1}^N ( Y_i(1)-Y_i(0) ) = \overline{Y_i(
   - It can even vary across individuals, though that would complicate your analysis.
 
 
-## Random assignment vs. random sampling
+## Random assignment of treatment vs. random sampling from a population
 
 - Randomization (of treatment): assigning subjects with known probability to experimental conditions.
 
@@ -477,17 +743,19 @@ knitr::include_graphics("../Images/randomassignment.png")
 
 ## Three key assumptions
 
-
 To make causal claims with an experiment (or to judge whether we believe a study's claims), we need three core assumptions:
 
- - Random assignment of subjects to treatment, which implies that receiving the treatment is statistically independent of subjects' potential outcomes.
+ - Random assignment of subjects to treatment, which implies that receiving the
+   treatment is statistically independent of subjects' potential outcomes.
 
  - Stable unit treatment value assumption (SUTVA).
 
- - Excludability, which means that a subject’s potential outcomes respond only to the defined treatment, not other extraneous factors that may be correlated with treatment.
+ - Excludability, which means that a subject’s potential outcomes respond only
+   to the defined treatment, not other extraneous factors that may be
+   correlated with treatment.
 
-
-
+We will engage these assumptions more when we talk about testing and
+estimation.  We used SUTVA above already when we shuffled `Z`.
 
 ## Key assumption: SUTVA, part 1
 
@@ -495,7 +763,10 @@ To make causal claims with an experiment (or to judge whether we believe a study
 
    - A classic violation is the case of vaccines and their spillover effects.
 
-   - Say I am in the control condition (no vaccine).  If whether I get sick ($Y_i(0)$) depends on other people's treatment status (whether they take the vaccine), it's like I have two different $Y_i(0)$ (one for when I'm near a vaccinated person and one for when I am not)!
+   - Say I am in the control condition (no vaccine).  If whether I get sick
+     ($Y_i(0)$) depends on other people's treatment status (whether they take
+     the vaccine), it's like I have two different $Y_i(0)$ (one for when I'm
+     near a vaccinated person and one for when I am not)!
 
    - SUTVA (= stable unit treatment value assumption)
 
@@ -505,7 +776,9 @@ To make causal claims with an experiment (or to judge whether we believe a study
 
    - Say treatment is taking a vaccine, but there are two kinds of vaccines and they have different ingredients.
 
-   - An example of a violation is when whether I get sick when I take the vaccine: $Y_i(1)$) depends on which vaccine I got.  We would have two different $Y_i(1)$ --- one for vaccine 1 and another for vaccine 2!
+   - An example of a violation is when whether I get sick when I take the
+     vaccine: $Y_i(1)$ depends on which vaccine I got.  We would have two
+     different $Y_i(1)$ --- one for vaccine 1 and another for vaccine 2!
 
 
 ## Key assumption: Excludability
@@ -514,11 +787,60 @@ To make causal claims with an experiment (or to judge whether we believe a study
 
   - Important to define the treatment precisely.
 
-  - Important to also maintain symmetry between treatment and control groups (e.g., through blinding, having the same data collection procedures for all study subjects, etc.), so that treatment assignment only affects the treatment received, not other things like interactions with researchers that you don't want to define as part of the treatment.
+  - Important to also maintain symmetry between treatment and control groups
+    (e.g., through blinding, having the same data collection procedures for all
+    study subjects, etc.), so that treatment assignment only affects the
+    treatment received, not other things like interactions with researchers
+    that you don't want to define as part of the treatment.
 
-  - Example: people in the treatment group (who know they got a vaccine) rush out to go dancing and then we see more sickness in that group.
+  - Example: people in the treatment group (who know they got a vaccine) rush
+    out to go dancing and then we see more sickness in that group.
 
-  - Example: village not receiving payments (the control group) get targetted by an NGO for increased funds and support.
+  - Example: village not receiving payments (the control group) get targeted
+    by an NGO for increased funds and support.
+
+# What can we do with a randomized experiment?
+
+## Average causal effect
+
+ - While we can't measure the individual causal effect, $\tau_i = Y_i(1)-Y_i(0)$, we can randomly assign subjects to treatment and control conditions to **define** an **average causal effect**, $\bar{\tau}_i$:
+
+\centering
+$\overline{\tau_i} = \frac{1}{N} \sum_{i=1}^N ( Y_i(1)-Y_i(0) ) = \overline{Y_i(1)-Y_i(0)}$
+
+
+ - The average causal effect is also known as the average treatment effect (ATE).
+
+ - Further explanation on how and why we **estimate** this **estimand** after
+   we discuss randomization of treatment assignment.
+
+
+## Estimands and causal questions
+
+- Before we discuss how randomization allows us to **estimate** the ATE, note that the ATE is a type of estimand or aggregation of individual level causal effects.
+
+- An estimand is a quantity you want to learn about (from your data).  It's the target of your research that *you* set. The ATE is a common estimand. Another might be the difference in log odds:
+
+  \begin{equation}
+  \log\left( \frac{\bar{Y}_i(1)}{1 - \bar{Y}_i(1)} \right) - \log\left( \frac{\bar{Y}_i(0)}{1 - \bar{Y}_i(0)} \right)
+  \end{equation}
+
+- Being precise about your research question means being precise about which summaries of potential outcomes you want to learn about. For causal questions, this means specifying:
+   - The outcome
+   - The treatment and control conditions
+   - The study population
+
+## Other types of estimands you may be interested in
+
+- The ATE for a particular subgroup, aka conditional average treatment effect (CATE)
+
+- Differences in CATEs:  differences in the average treatment effect for one group as compared with another group.
+
+- The ATE for just the treated units, aka ATT (average treatment effect on the treated)
+
+- The local ATE (LATE).  "Local" = those whose treatment status would be changed by an encouragement in an encouragement design (aka CACE, complier average causal effect) or those in the neighborhood of a discontinuity for a regression discontinuity design.
+
+- Estimands and estimators are discussed in detail later in the course.
 
 ## Randomization is powerful (4)
 
@@ -527,12 +849,6 @@ To make causal claims with an experiment (or to judge whether we believe a study
 - Randomization makes those who were randomly selected to not receive the intervention to be good stand-ins for the counterfactuals for those who were randomly selected to receive the treatment, and vice versa.
 
 - We have to worry about this if the intervention were not randomized (= an observational study).
-
-## What does randomization do?
-
-R simulation.
-
-# Randomized vs. observational studies
 
 ## Different types of studies
 
@@ -584,8 +900,6 @@ Start with a group units who you can directly observe: like the people who showe
 
   - Assignment probabilities can even vary across units **as long as you know the probability for each and every unit**, though that would complicate your analysis.
 
-
-
 ## Random assignment $\neq$ random sampling
 
 - Random sampling (from population): selecting subjects into your sample from a population with known probability. You cannot directly observe the whole population so you draw a sample.
@@ -598,7 +912,6 @@ Start with a group units who you can directly observe: like the people who showe
     (all the hospitals, all the judges).
 
 ## Random assignment $\neq$ random sampling
-
 
 - How you recruit your initial group (or experimental pool) matters:
 
@@ -616,7 +929,6 @@ Start with a group units who you can directly observe: like the people who showe
 
 
 ## Randomization is closely linked to your research design
-- See module on [Research Design](/research-design.html)
 
 - Remember that you need to define and justify your control condition:
    - this may be no intervention
@@ -634,293 +946,6 @@ Start with a group units who you can directly observe: like the people who showe
   - Example: Treatment at the district level, but outcomes at the community level.
 
 - The level at which treatment is assigned and at which outcomes are measured affect what your study can demonstrate.
-
-# Some common types of randomization
-
-## Simple randomization (coin-flipping)
-
-- For each unit, flip a coin to see if it will be treated. Then you measure outcomes at the same level as the coin.
-
-- The coins don’t have to be fair (50-50), but you have to know the probability of treatment assignment.
-
-- You can’t guarantee a specific number of treated units and control units.
-
-- Example: If you have 6 units and you flip a fair coin for each, you have about a 3% chance of assigning **all** units to treatment or assigning **all** units to control.
-
-## Example code for simple randomization I
-
-```{r echo=TRUE}
-# set the random number seed to make this replicable
-set.seed(12345)
-
-# set a sample size
-N <- 200
-
-# Generate the simple random assignment
-# (Notice that in an experiment we have a single
-# trial and thus size=1)
-# Our object with N people total is called simple.ra
-simple.ra <- rbinom(n = N,size = 1, prob = .5)
-
-# 112 people ended up in the treatment group
-sum(simple.ra)
-```
-
-## Example code for simple randomization II
-
-```{r echo=TRUE}
-# you can also use the randomizr package
-library(randomizr)
-
-# for replicability
-set.seed(23456)
-# Simple random assignment uses the simple_ra function
-# Our object with N people total is called treatment
-treatment <- simple_ra(N = N,  # total sample size
-    prob = .5 # probability of receiving treatment
-)
-sum(treatment)
-```
-
-## Complete randomization (drawing from an urn)
-
-- A fixed number $m$ out of $N$ units are assigned to treatment.
-
-- The probability a unit is assigned to treatment is $m/N$.
-
-- This is like having an urn or bowl or bag with $N$ balls, of which $m$ are marked as treatment and $N-m$ are marked as control.  Public lotteries use this method.
-
-## Example code for complete randomization I
-
-``` {r echo=TRUE}
-# set sample size N
-N <- 200
-# set number of treated units m
-m <- 100
-
-# create a vector of m 1's and N-m 0's
-complete.ra <- c(rep(1,m), rep(0,N-m))
-
-# And then scramble it randomly using sample()
-# The default is sampling without replacement
-
-set.seed(12345) # for replicability
-complete.ra <- sample(complete.ra)
-
-sum(complete.ra)
-```
-
-## Example code for complete randomization II
-
-``` {r echo=TRUE}
-# you can also use the randomizr package
-library(randomizr)
-
-# for replicability
-set.seed(23456)
-
-# Complete random assignment:
-treatment <- complete_ra(N = 200, # total sample size
-            m = 100) # number to assign to treatment
-
-sum(treatment)
-
-# note what happens if you don't specify m!
-```
-
-Should always give you $m$ treated.
-
-## Block (or stratified) randomization I
-
-- We create blocks of units and randomize separately within each block. We are doing mini-experiments in each block.
-
-  - Example: block = district, units = communities.  We randomize treatment at the community level **within district** and also measure outcomes at the community level.
-
-- Blocks that represent a substantively meaningful subgroup can help you to
-  learn about how effects might differ by subgroup.
-
-    - By controlling number of subjects per subgroup, you ensure that you have
-    enough subjects in each group.
-
-    - Especially useful when you have a rare group --- by chance you might get
-    very few of them in treatment or control even under random assignment (or
-    you might have some imbalance).
-
-## Block (or stratified) randomization II
-
-- Blocks that are homogeneous on a given outcome increase precision of
-  estimation for that outcome as compared with the experiment without blocks. (We
-  will address this more in the power analysis section).
-
-
-## Cluster randomization I
-
-- A cluster is a **group of units**. In a cluster-randomized study, all units in the cluster are assigned to the same treatment status.
-
-- Use cluster randomization if the intervention has to work at the cluster level.
-
-  - For example, if the intervention is about school playgrounds, then the school is the unit of assignment even if student health may be an outcome measured at level of individual students.
-
-- Having fewer clusters hurts your ability to detect treatment effects and make
-  cause misleading $p$-values and confidence intervals (or even estimates).
-  *How much* depends on the intra-cluster correlation (ICC or $\rho$).
-
-## Cluster randomization II
-
-- Higher $\rho$ is worse:
-
-    - When $\rho=0$ then the village doesn't matter for the behavior of the individuals.
-    - When $\rho=1$ then every person in the village would give exactly the same answer.  Having another person from this village doesn't give you additional information since his outcome is identical to the person you already had.
-
-- For the same number of units, having **more clusters** with fewer units per cluster can help.
-
-- Trade off spillover and power.
-
-- If you would not like an experiment with 10 units, then you should not be
-      happy with an experiment with 10 clusters of 100 units. The effective sample size of this cluster randomized experiment is between 10 and 10 $\times$ 100 = 1000, but closer to 10 the higher the $\rho$.
-
-## You can combine blocks and clusters
-
-- You can have clusters within blocks.
-
-  - Example: block = district, cluster = communities, units = individuals.  You are measuring outcomes at the individual level.
-
-  - Example: block = province, cluster = district, units = communities.  You are measuring outcomes at the community level.
-
-- You can't have blocks within clusters.
-
-- For block and cluster randomization, you can use `block_ra` and `cluster_ra` in the `randomizr` package in R.
-
-- For more complicated designs, you might find `DeclareDesign` helpful. (<https://declaredesign.org>)
-
-
-# Best practices
-
-## Best practices: replicability
-
-- EGAP Methods Guide on Randomization (<https://egap.org/resource/10-things-to-know-about-randomization/>)
-
-- Set a seed and save your code and random assignment column
-
-- Verify
-
-- Sometimes increased transparency > replicability
-
-
-## Best practices: balance
-
-- Check overall balance with a D-square test using `xBalance` in the `RItools` package (@hansen:bowers:2008) (large sample randomization inference):
-
-```{r echo=TRUE, eval=FALSE}
-xBalance(treatment~x1+x2,data=dat,report='chisquare')
-```
-  -  See also the `coin` package `independence_test` for permutation based version
-
-- Use an F-test for a regression of treatment assignment on LHS and covariates on RHS (large sample approximate to randomization inference):
-
-```{r echo=TRUE, eval=FALSE}
-anova(lm(treatment~1,data = dat),
-    lm(treatment~x1+x2+x3,data=dat), test = 'F')
-```
-
-## Best practices: balance
-
-  - Random assignment gives us, in expectation, **overall balance** on the many covariates. It does not guarantee that all covariate to treatment relationships will be zero. In fact, in a small experiment, the magnitudes of imbalance may be high even if the randomization occurred perfectly.
-
-  - You will see t-tests of covariates one by one.  Just by chance, you might get statistically significant differences on a variable. If you check balance on 100 variables, you will reject the null of no relationship in 5 of them even if there truly is no relationship.
-
-# Some experimental designs
-
-## Access
-
-  - Randomly select a treatment group through a lottery or equivalent mechanism, which randomizes **access** to the program.
-
-  - Useful when you do not have enough resources to treat everyone.
-
-  - Sometimes, some units (peoples, communities) must have access to a program.
-     - For example: a partner organization doesn’t want to risk a vulnerable community NOT getting a program (want a guarantee that they will be always be treated).
-     - You can exclude those units from the experiment, and do random assignment among the remaining units that have a probability of assignment strictly between (and not including) 0 and 1.
-
-
-## Delayed access (Phase-in or wait list)
-
-- Randomize *timing* of access to the program.
-
-- Often you do not have the capacity to implement the treatment in a lot of places at once.
-
-- When an intervention can be or must be rolled out in stages, you can randomize the order in which units are treated.
-
-- Your control group are the as-yet untreated units.
-
-- Be careful: the probability of assignment to treatment will vary over time because units that are assigned to treatment in earlier stages are not eligible to be assigned to treatment in later stages.
-
-
-## Factorial or crossed-assignment
-
-- Factorial design enables testing of more than one treatment.
-
-- You can analyze one treatment at a time.
-
-- Or combinations thereof.
-
-- Example:
-
-\begin{table}
-\begin{tabular}{r|c|c}
- & $X_1=0$ & $X_1=1$ \\ \hline
-$X_2=1$ & A  & C  \\ \hline
-$X_2=0$ & B  & D  \\
-\hline
-\end{tabular}
-\end{table}
-
-We might focus on an estimand like  $\mathbb{E}[Y(X_1=1, X_2=1)]-\mathbb{E}[Y(X_1=0, X_2=0)]$.
-
-
-
-## Encouragement
-
-- Randomize **encouragement** to take the treatment, such as an invitation or subsidy to participate in a program.
-
-- Useful when you cannot force a subject to participate.
-
-- Estimands:
-    - the ATE of the encouragement for your experimental sample.
-
-    - the ATE of participation (not the encouragement) for the units who would participate when encouraged and wouldn't participate when not encouraged (compliers).
-
-- Instrumental variables analysis for the complier ATE, with the assignment as the instrument.  Note the exclusion restriction.
-
-
-
-# Some limits to randomized studies
-
-- Ethics --- is this sort of manipulation ethical? Sometimes not.
-
-- Must be done in real time, ahead of the intervention roll-out.
-
-- Reduced flexibility for a partner organization (problem for any prospective evaluation).
-
-- Limits to the size of the experimental pool.
-
-- Cost.
-
-- The power constraint --- you need a lot of units (problem for many statistical approaches).
-
-- Violations of the key assumptions (spillovers; violation of the second key assumption for [Causal Inference](causalinference.html)).
-
-- External validity (problem for any evaluation and social science in general).
-
-
-# References
-
-## References
-
-[EGAP Policy Brief 40: Development Assistance and Collective Action Capacity](https://egap.org/resource/brief-40-development-assistance-and-collective-action-capacity/)
-
-[EGAP Policy Brief 58: Does Bottom-Up Accountability Work?](https://egap.org/resource/does-bottom-up-accountability-work-evidence-from-uganda/)
-
-# Extra Stuff
 
 ## Extra: Randomization is powerful (1)
 
@@ -966,193 +991,6 @@ $E_R[\overline{Y_i}|T_i=0]=\overline{Y_i(0)}$.
 
 - So we can just take the difference of these unbiased estimators of $\overline{Y_i(1)}$ and
  $\overline{Y_i(0)}$ to get an unbiased estimate of the ATE.
-
-
-
-
-# Concepts and Notation for Causal Inference and Statistical Inference
-
-## Notation and Concepts for Counterfactual Causal Inference
-
-  - *Treatment* or *Intevention*  $Z_i=1$ for treatment and $Z_i=0$ for control
-    for units $i$. (We mostly assume that all units **could have** $Z_i=1$ or
-    $Z_i=0$. That it is not impossible for any unit to have either value.) (Q:
-    What is a unit? Examples of interventions?)
-
-  - Each unit has a pair of *potential outcomes* $(y_{i,Z_i=1},y_{i,Z_i=0})$
-    (also written  $(y_{i,1},y_{i,0})$ ) (given the Stable Unit Treatment Value
-    Assumption (SUTVA)).
-    - Without the SUTVA assumption, and with 4 units, with two having $Z_i=1$,
-      unit $i=1$ would have the following potential outcomes:
-      $(y_{i,1100},y_{i,1010},y_{i,1001},y_{i,0101},y_{i,0011})$
-  - *Causal Effect under SUTVA*  when $y_{i,1} \ne y_{i,0}$, $\tau_i   =
-    f(y_{i,1},y_{i,0})$ ex. $\tau_i =  y_{i,1} - y_{i,0}$.
-
-  - *Fundamental Problem of (Counterfactual) Causality* We only see one
-    potential outcome $Y_i = Z_i * y_{i,1} + (1-Z_i) y_{i,0}$ (Examples:
-    Argentina having elected Mieli versus not? Chile under a new constitution
-    versus not?)
-
-  - *Covariates*,  $\mathbf{X}=\begin{bmatrix} x_{11} & \ldots & x_{1k} \\ \vdots &
-    \vdots & \vdots \\  x_{n1} & \ldots & x_{nk} \end{bmatrix}$ is a matrix
-    containing  background information about the units that might predict
-    $(y_{i,1},y_{i,0})$ or $Z$ (but that don't predict $Z$ if $Z$ is randomized
-    as in an experiment).
-
-## The observation and unobserved causal comparisons
-
-We can learn about unobserved but theorized causal mechanisms by observing the world [@brady2008cae]:
-
-- **Persistent association** "We always/mostly see $Y=1$ when $X=1$ and $Y=0$
-  when $X=0$."
-- **Counterfactual Difference** "If  $X$ had not been this value, then $Y$
-  would not have been that value."
-- **Difference after manipulation** "When we change $X$ from one value to
-  another value, then $Y$ changes from one value to another value."
-  (establishes causal priority of $X$ over $Y$, implied that $Y$ would not have
-  changed.).
-- **Difference after operation of a mechanism** "Once upon a time $A$ changed
-  $X$, and then one day $X$ changed $B$, and because of that $B$ changed $C$,
-  and finally $C$ changed $Y$."
-
-All approaches are useful. This week we are focusing on the counterfactual approach and somewhat on the persistent association.
-
-## How to interpret "X causes Y" in counterfactual terms?
-
-The counterfactual approach requires that we can imagine units with and without $X$ (or say, $X=1$ and $X=0$).
-
- -  We can establish that X causes Y without knowing the mechanism. The
-   mechanism can be complex, and it can involve probability: X causes Y
-   sometimes because of A and sometimes because of B.
- - "X causes Y" can mean "With X, probability of Y is higher than would be
-   without X." or "Without X there is no Y." Either is compatible with the
-   counterfactual idea.
- - Of course: Correlation is not causation.
- - "X causes Y" is a statement about *what didn't happen*: "If X had not
-   operated, occurred, then Y would not have occurred." (More about the
-   fundamental problem of counterfactual causation later)
-
-Today: Show that a randomized experiment allows us to **learn about**
-unobserved counterfactual outcomes using statistical inference.
-
-```{r, echo=FALSE, results="hide"}
-set.seed(12345)
-honeydat <- data.frame(x1=c(1,1,2,3,1,0,0,0,0,2),
-    x2=sample(1:9,size=10,replace=TRUE))
-honeydat$Zlat <- with(honeydat,.5*x1 + runif(10))
-honeydat$Z <- as.numeric(honeydat$Z > median(honeydat$Z))
-## honeydat$y0 <- with(honeydat,x1+x2+Z+rpois(10,lambda=5))
-honeydat$y0 <- with(honeydat, x1 + .25*x1^2+rpois(10,lambda=8))
-summary(lm(y0~x1+x2,data=honeydat))
-## cor(honeydat[,c("x1","x2","Z","y0")])
-honeydat$Zlat <- NULL
-honeydat$y1 <- with(honeydat,y0 - c(1,1,2,3,1,0,0,0,0,2))
-honeydat$Y <- with(honeydat,y1*Z + y0*(1-Z))
-with(honeydat,mean(Y[Z==1]) - mean(Y[Z==0]))
-honeydat$tau <- honeydat$y1 - honeydat$y0
-honeydat$id <- 1:10
-dat <- honeydat[,c("id","x1","x2","y0","y1","tau")]
-```
-
-
-## Example: Honey and Colds {.shrink}
-
-Your friend explains a causal mechanism that eating raw honey reduces the
-duration of colds. What kinds of **alternative** explanations might we come up
-with for this result?
-
-Imagine these were the underlying potential outcomes with $x_1$ and $x_2$
-representing two of those explanations and that $x_1 \rightarrow y_0$ and that
-$x_2 \not \rightarrow y_0$.
-
-```{r}
-kable(dat)
-```
-
-The true, unobserved, average (additive) causal effect is: `r with(honeydat, mean(y1-y0))`.
-
-Let us run a randomized experiment and see how we do:
-
-## An RCT:
-
-What is happening here? This is randomization. How would we know whether
-`complete_ra` worked as it should?
-
-```{r, echo=TRUE}
-library(randomizr)
-set.seed(12345)
-dat$Z <- complete_ra(N=10,m=5)
-dat$Y <- with(dat,Z*y1 + (1-Z)*y0)
-```
-
-
-## An RCT:
-
-What is happening here? This is randomization. How would we know whether
-`complete_ra` worked as it should?
-
-```{r}
-kbl(dat)
-```
-
-
-## Assessing randomization {.allowframebreaks}
-
-We expect that the distributions of $x_1$ and $x_2$ would be (nearly) the same between the treated and control groups. We write "0" below, but in fact, randomization does not make those relationships exactly 0.
-
-\begin{center}
-\begin{tikzcd}[column sep=large]
-	  Z  \arrow[from=1-1,to=1-4] &    &    & Y \\
-	   x_1 \arrow[from=2-1,to=1-1, "\text{0 if $Z$ is randomized}"] \arrow[from=2-1,to=1-4] & & &
-	   x_2 \arrow[from=2-4,to=1-1, "\text{0 if $Z$ is randomized}",sloped] \arrow[from=2-4,to=1-4]
-\end{tikzcd}
-\end{center}
-
-Here, just looking at means:
-```{r, echo=TRUE}
-dat %>% group_by(Z) %>% reframe(mean(x1),mean(x2))
-```
-
-```{r, echo=TRUE}
-library(RItools)
-bal1 <- balanceTest(Z~x1+x2,data=dat)
-bal1$results[,1:4,]
-```
-
-## What **should** we expect from an experiment?
-
-...in regards covariate balance? Lets simulate to learn:
-
-```{r, echo=TRUE}
-
-new_exp <- function(Z){
-	newZ <- sample(Z)
-	return(newZ)
-}
-
-diff_means <- function(x,Z){
-	mean(x[Z==1]) - mean(x[Z==0])
-}
-
-all_cov_bal<- replicate(1000,diff_means(x=dat$x1,Z=new_exp(dat$Z)))
-
-summary(all_cov_bal)
-
-obs_cov_bal <- diff_means(dat$x1,dat$Z)
-obs_cov_bal
-
-```
-
-## What **should** we expect from an experiment?
-
-So:
-
-1. experiments do not guarantee exact equality of covariates and
-2. we can **know** (or closely approximate) what kind of covariate differences
-   a given experimental design would generate.
-
-
-
 # Estimation, Estimators, Bias, Consistency, Given Randomization
 
 ## Estimating the ATE in an RCT:
@@ -1172,7 +1010,7 @@ with(dat,est1(Z=Z,Y=Y))
 with(dat,est2(Z=Z,Y=Y))
 ```
 
-## How does randomization help us trust our estimators?
+## How does randomization help us trust our estimators? {.shrink}
 
 This is a simulation assessing **estimation bias** (and hinting at **consistency**)
 
@@ -1254,7 +1092,7 @@ summary(trueATE-dist_est2a)
 
 ## What about if we didn't know exactly how Z was assigned?
 
-Imagine that `x1` causes `Z` (here, Z is randomized but x1 changes Z before reveals y0 or y1):
+Imagine that `x1` causes `Z` (here, Z is randomized but x1 changes Z before revealing y0 or y1):
 
 ```{r figbias, out.width=".7\\textwidth"}
 plot(density(dist_est2a),ylim=c(0,.8))
@@ -1334,4 +1172,10 @@ Randomization makes $y_1, y_0, \mathbf{X} \perp Z$. How to make use of this fact
   \includegraphics[width=\textwidth]{images/cartoonFisherNew2.pdf}
 
 ## References
+
+## References
+
+[EGAP Policy Brief 40: Development Assistance and Collective Action Capacity](https://egap.org/resource/brief-40-development-assistance-and-collective-action-capacity/)
+
+[EGAP Policy Brief 58: Does Bottom-Up Accountability Work?](https://egap.org/resource/does-bottom-up-accountability-work-evidence-from-uganda/)
 
