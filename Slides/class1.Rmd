@@ -11,7 +11,7 @@ bibliography:
 fontsize: 10pt
 graphics: yes
 biblio-style: authoryear-comp
-link-citations: yes
+link-citations: true 
 biblatexoptions:
   - natbib=true
 header-includes: |
@@ -51,7 +51,7 @@ colorlinks: true
 <!-- To show notes  -->
 <!-- https://stackoverflow.com/questions/44906264/add-speaker-notes-to-beamer-presentations-using-rmarkdown -->
 
-```{r echo=FALSE, include=FALSE, cache=FALSE}
+```{r echo=FALSE, include=TRUE, cache=FALSE}
 library(here)
 source(here::here("Exercises/rmd_setup.R"))
 library(tidyverse)
@@ -68,9 +68,13 @@ colorize <- function(x, color) {
   if (knitr::is_latex_output()) {
     sprintf("\\textcolor{%s}{%s}", color, x)
   } else if (knitr::is_html_output()) {
-    sprintf("<span style='color: %s;'>%s</span>", color,
-      x)
-  } else x
+    sprintf(
+      "<span style='color: %s;'>%s</span>", color,
+      x
+    )
+  } else {
+    x
+  }
 }
 ```
 
@@ -124,15 +128,14 @@ Hay recursos en español aqui: <https://egap.github.io/theory_and_practice_of_fi
 
  - Introduction to Jake
  - Introduction to the idea of the course: roadmap
- - Introductions to you and a project that you might work on during the week.
- - Jake introduces concepts: experiments, potential outcomes, treatment effects, unbiased
-   estimation, and encourages questions and answers.
+ - Introductions to you and a project that you might work on during the week. (See perhaps <https://egap.github.io/learningdays-resources/Exercises/design-form.html> for help if you want to develop a project this week.)
+ - Jake introduces concepts: experiments, potential outcomes, and addresses questions from the class.
  - Coffee Break
  - Questions about the lecture
- - Exercise 1: Describe your data (and update R). <!-- Larger and smaller experiments and covariate balance -->
+ - Exercise 1: How big of an experiment should we have to feel comfortable about covariate balance?
  - Break
  - Lecture
- - Open Discussion and/or work on projects
+ - Open Discussion and/or work on projects with small group/individual consultations
 
 
 # Introductions
@@ -513,27 +516,24 @@ $Y_i = T_iY_i(1) + (1-T_i)Y_i(0)$
 
 - But we only have at most one potential outcome for each individual, which means we don't directly see these treatment effects. We can only **infer** them.
 
+## Recap: Notation and Concepts for Counterfactual Causal Inference {.shrink}
 
-# Concepts and Notation for Causal Inference and Statistical Inference
-
-## Notation and Concepts for Counterfactual Causal Inference {.shrink}
-
-  - *Treatment* or *Intevention*  $Z_i=1$ for treatment and $Z_i=0$ for control
-    for units $i$. (We mostly assume that all units **could have** $Z_i=1$ or
-    $Z_i=0$. That it is not impossible for any unit to have either value.) (Q:
+  - *Treatment* or *Intevention*  $T_i=1$ for treatment and $T_i=0$ for control
+    for units $i$. (We mostly assume that all units **could have** $T_i=1$ or
+    $T_i=0$. That it is not impossible for any unit to have either value.) (Q:
     What is a unit? Examples of interventions?)
 
-  - Each unit has a pair of *potential outcomes* $(y_{i,Z_i=1},y_{i,Z_i=0})$
+  - Each unit has a pair of *potential outcomes* $(y_{i,T_i=1},y_{i,T_i=0})$
     (also written  $(y_{i,1},y_{i,0})$ ) (given the Stable Unit Treatment Value
     Assumption (SUTVA)).
-    - Without the SUTVA assumption, and with 4 units, with two having $Z_i=1$,
+    - Without the SUTVA assumption, and with 4 units, with two having $T_i=1$,
       unit $i=1$ would have the following potential outcomes:
       $(y_{i,1100},y_{i,1010},y_{i,1001},y_{i,0101},y_{i,0011})$
   - *Causal Effect under SUTVA*  when $y_{i,1} \ne y_{i,0}$, $\tau_i   =
     f(y_{i,1},y_{i,0})$ ex. $\tau_i =  y_{i,1} - y_{i,0}$.
 
   - *Fundamental Problem of (Counterfactual) Causality* We only see one
-    potential outcome $Y_i = Z_i * y_{i,1} + (1-Z_i) y_{i,0}$ (Examples:
+    potential outcome $Y_i = T_i * y_{i,1} + (1-T_i) y_{i,0}$ (Examples:
     Argentina having elected Mieli versus not? Chile under a new constitution
     versus not?)
 
@@ -552,9 +552,9 @@ We can learn about unobserved but theorized causal mechanisms by observing the w
 - **Counterfactual Difference** "If  $X$ had not been this value, then $Y$
   would not have been that value."
 - **Difference after manipulation** "When we change $X$ from one value to
-  another value, then $Y$ changes from one value to another value."
-  (establishes causal priority of $X$ over $Y$, implied that $Y$ would not have
-  changed.).
+  another value (and maybe call it $T$ for "Treatment"), then $Y$ changes from
+  one value to another value." (establishes causal priority of $X$ over $Y$,
+  implied that $Y$ would not have changed.).
 - **Difference after operation of a mechanism** "Once upon a time $A$ changed
   $X$, and then one day $X$ changed $B$, and because of that $B$ changed $C$,
   and finally $C$ changed $Y$."
@@ -563,21 +563,23 @@ All approaches are useful. This week we are focusing on the counterfactual appro
 
 ```{r, echo=FALSE, results="hide"}
 set.seed(12345)
-honeydat <- data.frame(x1=c(1,1,2,3,1,0,0,0,0,2),
-    x2=sample(1:9,size=10,replace=TRUE))
-honeydat$Zlat <- with(honeydat,.5*x1 + runif(10))
+honeydat <- data.frame(
+  x1 = c(1, 1, 2, 3, 1, 0, 0, 0, 0, 2),
+  x2 = sample(1:9, size = 10, replace = TRUE)
+)
+honeydat$Zlat <- with(honeydat, .5 * x1 + runif(10))
 honeydat$Z <- as.numeric(honeydat$Z > median(honeydat$Z))
 ## honeydat$y0 <- with(honeydat,x1+x2+Z+rpois(10,lambda=5))
-honeydat$y0 <- with(honeydat, x1 + .25*x1^2+rpois(10,lambda=8))
-summary(lm(y0~x1+x2,data=honeydat))
+honeydat$y0 <- with(honeydat, x1 + .25 * x1^2 + rpois(10, lambda = 8))
+summary(lm(y0 ~ x1 + x2, data = honeydat))
 ## cor(honeydat[,c("x1","x2","Z","y0")])
 honeydat$Zlat <- NULL
-honeydat$y1 <- with(honeydat,y0 - c(1,1,2,3,1,0,0,0,0,2))
-honeydat$Y <- with(honeydat,y1*Z + y0*(1-Z))
-with(honeydat,mean(Y[Z==1]) - mean(Y[Z==0]))
+honeydat$y1 <- with(honeydat, y0 - c(1, 1, 2, 3, 1, 0, 0, 0, 0, 2))
+honeydat$Y <- with(honeydat, y1 * Z + y0 * (1 - Z))
+with(honeydat, mean(Y[Z == 1]) - mean(Y[Z == 0]))
 honeydat$tau <- honeydat$y1 - honeydat$y0
 honeydat$id <- 1:10
-dat <- honeydat[,c("id","x1","x2","y0","y1","tau")]
+dat <- honeydat[, c("id", "x1", "x2", "y0", "y1", "tau")]
 ```
 
 
@@ -607,8 +609,8 @@ Let's imagine that we randomized honey to 5 of the people in the friendship grou
 ```{r, echo=TRUE}
 library(randomizr)
 set.seed(12345)
-dat$Z <- complete_ra(N=10,m=5)
-dat$Y <- with(dat,Z*y1 + (1-Z)*y0)
+dat$Z <- complete_ra(N = 10, m = 5)
+dat$Y <- with(dat, Z * y1 + (1 - Z) * y0)
 ```
 
 
@@ -637,13 +639,15 @@ below, but in fact, randomization does not make those relationships exactly 0.
 
 Here, just looking at means:
 ```{r, echo=TRUE}
-dat %>% group_by(Z) %>% reframe(mnx1=mean(x1),mnx2=mean(x2))
+dat %>%
+  group_by(Z) %>%
+  reframe(mnx1 = mean(x1), mnx2 = mean(x2))
 ```
 
 ```{r, echo=TRUE}
 library(RItools)
-bal1 <- balanceTest(Z~x1+x2,data=dat)
-bal1$results[,1:4,]
+bal1 <- balanceTest(Z ~ x1 + x2, data = dat)
+bal1$results[, 1:4, ]
 ```
 
 Is this what we should expect from a well-conducted experiment? Have we messed
@@ -654,21 +658,23 @@ up the code?
 ...in regards covariate balance? Lets simulate to learn: (let's explain this code)
 
 ```{r, echo=TRUE}
-new_exp <- function(Z){
-	newZ <- sample(Z)
-	return(newZ)
+new_exp <- function(Z) {
+  newZ <- sample(Z)
+  return(newZ)
 }
-diff_means <- function(x,Z){
-	mean(x[Z==1]) - mean(x[Z==0])
+diff_means <- function(x, Z) {
+  mean(x[Z == 1]) - mean(x[Z == 0])
 }
-all_cov_bal<- replicate(10000,diff_means(x=dat$x1,
-					Z=new_exp(dat$Z)))
+all_cov_bal <- replicate(10000, diff_means(
+  x = dat$x1,
+  Z = new_exp(dat$Z)
+))
 summary(all_cov_bal)
-obs_cov_bal <- diff_means(dat$x1,dat$Z)
+obs_cov_bal <- diff_means(dat$x1, dat$Z)
 obs_cov_bal
 ```
 
-## What **should** we expect from an experiment?
+## What **should** we expect from an experiment? {.shrink}
 
 So:
 
@@ -679,8 +685,10 @@ So:
 
 ```{r, echo=TRUE}
 obs_cov_bal
-quantile(all_cov_bal,seq(0,1,.1))
+quantile(all_cov_bal, seq(0, 1, .1))
 sd(all_cov_bal)
+mean(all_cov_bal <= obs_cov_bal)
+mean(all_cov_bal >= obs_cov_bal)
 ```
 
 
@@ -693,11 +701,118 @@ sd(all_cov_bal)
 These are the ways that the difference in mean `x1` can occur in our randomized
 design.
 
-```{r}
-plot(table(all_cov_bal),type="h")
+```{r, echo=FALSE,out.width=".6\\textwidth"}
+plot(table(all_cov_bal), type = "h")
 ```
 
-# Random assignment vs Random sampling 
+## Maybe an exercise {.allowframebreaks}
+
+This part might be best done interactively using R on your own computers.
+
+If `r obs_cov_bal` is small in statistical terms ($p=.07$), but seems large in
+substantive terms, what could we do to reduce this? Would a larger experiment
+help? Let's try using DeclareDesign for this --- I'd like to see how large of
+an experiment we'd need to reduce the covariate difference in `x1`.
+
+```{r, echo=TRUE}
+## This is a function to create a design
+create_design <- function(N) {
+  set.seed(12345)
+  design <- declare_model(
+    N = N,
+    id = 1:N,
+    x1 = rpois(N, lambda = 0.5) * 2,
+    x2 = sample(1:9, size = N, replace = TRUE),
+    u0 = rpois(N, lambda = 8),
+    u1 = rpois(N, lambda = 8),
+    y0 = x1 + 0.25 * sd(u0) * x1^2 + u0,
+    tau = x1 + u1,
+    y1 = y0 - tau
+  ) +
+    declare_assignment(Z = complete_ra(N = N, m = N / 2)) +
+    declare_inquiry(
+      diff_mean_x1 = mean(x1[Z == 1] - x1[Z == 0]),
+      diff_mean_x2 = mean(x2[Z == 1] - x2[Z == 0])
+    ) +
+    declare_measurement(Y = ifelse(Z == 1, y1, y0)) +
+    declare_estimator(x1 ~ Z, .method = lm_robust, inquiry = "diff_mean_x1", label = "calc_dm_x1") +
+    declare_estimator(x2 ~ Z, .method = lm_robust, inquiry = "diff_mean_x2", label = "calc_dm_x2")
+
+  return(design)
+}
+
+des_N_10 <- create_design(N = 10)
+```
+
+## Using DeclareDesign: make fake data
+
+```{r echo=TRUE}
+## A simulation is one random assignment of treatment
+sim_dat_N10 <- draw_data(des_N_10)
+
+## Simulated data (just the first 6 lines)
+head(sim_dat_N10)
+```
+
+## Using DeclareDesign: repeat the experiment {.allowframebreaks}
+
+```{r, echo=TRUE}
+sim_N10 <- simulate_design(des_N_10, sims = 100)
+head(sim_N10)
+
+sim_N10 %>%
+  group_by(inquiry, estimator) %>%
+  reframe(
+    pctile = c(0, .1, .5, .9, 1),
+    quantiles = round(quantile(estimate, pctile), 5)
+  ) %>%
+  print(n = 100)
+
+sim_N10 %>%
+  filter(inquiry == "diff_mean_x1") %>%
+  summarize(p_x1 = 2 * min(mean(estimate >= 1.2), mean(estimate <= 1.2)))
+```
+
+Now try for some larger Ns (here is where DeclareDesign makes our lives much easier):
+
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+
+the_designs <- redesign(des_N_10, N = c(10, 16, 20))
+sims <- simulate_designs(the_designs, sims = 1000)
+
+sims %>%
+  filter(inquiry == "diff_mean_x1") %>%
+  group_by(N) %>%
+  summarize(p_x1 = 2 * min(mean(estimate >= 1.2), mean(estimate <= 1.2)))
+
+
+cov_bal_res <- sims %>%
+  group_by(inquiry, N) %>%
+  reframe(
+    pctile = c(0, .1, .9, 1),
+    quantiles = round(quantile(estimate, pctile), 5)
+  ) 
+
+sims$NF <- factor(sims$N)
+g <- ggplot(sims,aes(x=inquiry,groups=NF,color=NF,y=estimate))+
+  geom_boxplot()
+g
+
+```
+
+## Summary:
+
+1. Randomization breaks the systematic relationship between treatment and background covariates.
+  - Notice that the median of the differences in means of $x_1$ and $x_2$ is zero for all N above in the boxplot.
+  - Notice also that this is true even if a covariate is a strong driver of the potential outcomes.
+
+2. Randomization allows for covariate differences in any given experiment. But as the sample size increases, the maximum size of the differences goes down.
+
+3. Randomization allows us to **know** the sizes of the possible covariate differences (this is because we can **repeat the experimental design** and **use simulation**). It also allows us to reason about whether a given observed difference is really weird or not so weird. (For example, 1.2 is not that strange to see if $N=10$, but becomes stranger to see as $N$ increases.)
+
+4. Randomization makes those who were randomly selected to not receive the intervention to be good stand-ins for the counterfactuals for those who were randomly selected to receive the treatment, and vice versa.
+
+# Random assignment vs Random sampling
 
 ## Randomization of treatment assignment
 
@@ -741,6 +856,8 @@ knitr::include_graphics("../Images/randomsampling_redblue_plain.png")
 knitr::include_graphics("../Images/randomassignment.png")
 ```
 
+# Key assumptions for randomized experiments
+
 ## Three key assumptions
 
 To make causal claims with an experiment (or to judge whether we believe a study's claims), we need three core assumptions:
@@ -753,9 +870,6 @@ To make causal claims with an experiment (or to judge whether we believe a study
  - Excludability, which means that a subject’s potential outcomes respond only
    to the defined treatment, not other extraneous factors that may be
    correlated with treatment.
-
-We will engage these assumptions more when we talk about testing and
-estimation.  We used SUTVA above already when we shuffled `Z`.
 
 ## Key assumption: SUTVA, part 1
 
@@ -781,11 +895,14 @@ estimation.  We used SUTVA above already when we shuffled `Z`.
      different $Y_i(1)$ --- one for vaccine 1 and another for vaccine 2!
 
 
+If I want to write $\tau_i = Y_i(T_i=1) - Y_i(T_i=0)$ as the causal effect of $T$ on $Y$ for person $i$. Recall: without the SUTVA assumption, and with 4 units, with two having $T_i=1$,
+      unit $i=1$ would have the following potential outcomes:
+      $(y_{i=1,1100},y_{i=1,1010},y_{i=1,1001},y_{i=1,0101},y_{i=1,0011})$
+
+
 ## Key assumption: Excludability
 
 - Treatment assignment has no effect on outcomes except through its effect on whether treatment was received.
-
-  - Important to define the treatment precisely.
 
   - Important to also maintain symmetry between treatment and control groups
     (e.g., through blinding, having the same data collection procedures for all
@@ -799,155 +916,9 @@ estimation.  We used SUTVA above already when we shuffled `Z`.
   - Example: village not receiving payments (the control group) get targeted
     by an NGO for increased funds and support.
 
-# What can we do with a randomized experiment?
+# Estimation, Estimators, Bias, Consistency, Given Randomization
 
-## Average causal effect
-
- - While we can't measure the individual causal effect, $\tau_i = Y_i(1)-Y_i(0)$, we can randomly assign subjects to treatment and control conditions to **define** an **average causal effect**, $\bar{\tau}_i$:
-
-\centering
-$\overline{\tau_i} = \frac{1}{N} \sum_{i=1}^N ( Y_i(1)-Y_i(0) ) = \overline{Y_i(1)-Y_i(0)}$
-
-
- - The average causal effect is also known as the average treatment effect (ATE).
-
- - Further explanation on how and why we **estimate** this **estimand** after
-   we discuss randomization of treatment assignment.
-
-
-## Estimands and causal questions
-
-- Before we discuss how randomization allows us to **estimate** the ATE, note that the ATE is a type of estimand or aggregation of individual level causal effects.
-
-- An estimand is a quantity you want to learn about (from your data).  It's the target of your research that *you* set. The ATE is a common estimand. Another might be the difference in log odds:
-
-  \begin{equation}
-  \log\left( \frac{\bar{Y}_i(1)}{1 - \bar{Y}_i(1)} \right) - \log\left( \frac{\bar{Y}_i(0)}{1 - \bar{Y}_i(0)} \right)
-  \end{equation}
-
-- Being precise about your research question means being precise about which summaries of potential outcomes you want to learn about. For causal questions, this means specifying:
-   - The outcome
-   - The treatment and control conditions
-   - The study population
-
-## Other types of estimands you may be interested in
-
-- The ATE for a particular subgroup, aka conditional average treatment effect (CATE)
-
-- Differences in CATEs:  differences in the average treatment effect for one group as compared with another group.
-
-- The ATE for just the treated units, aka ATT (average treatment effect on the treated)
-
-- The local ATE (LATE).  "Local" = those whose treatment status would be changed by an encouragement in an encouragement design (aka CACE, complier average causal effect) or those in the neighborhood of a discontinuity for a regression discontinuity design.
-
-- Estimands and estimators are discussed in detail later in the course.
-
-## Randomization is powerful (4)
-
-- If the intervention is randomized, then who receives or doesn't receive the intervention is not related to the characteristics of the potential recipients.
-
-- Randomization makes those who were randomly selected to not receive the intervention to be good stand-ins for the counterfactuals for those who were randomly selected to receive the treatment, and vice versa.
-
-- We have to worry about this if the intervention were not randomized (= an observational study).
-
-## Different types of studies
-
-- Randomized studies
-
-   - Randomize treatment, then go measure outcomes
-
-- Observational studies
-
-   - Treatment is not randomly assigned.  It is observed, but not manipulated.
-
-## Exercise: Observational studies vs. Randomized studies
-
-Small group discussion. We have a theory that vaccine hesitance is less about
-ideology and values and more about perceptions of social facts (how many other
-people who are relevant to you who you think have been vaccinated). Sketch two
-research designs to teach us about this theory.
-
-**Tasks:**
-
-  1. Sketch an ideal observational study design (no randomization, no
-     researcher control but infinite resources for data collection). What
-     questions would critical readers ask when you claim that your results
-     reflect a causal relationship?
-
-  2. Sketch an ideal experimental study design (including randomization).  What
-     questions would critical readers ask when you claim that your results
-     reflect a causal relationship?
-
-## Discuss
-
- - What were key components and strengths and weaknesses of the randomized studies?
-
- - What were key components and strengths and weaknesses of the observational studies?
-
-# How to Randomize
-
-## Randomization of treatment assignment
-
-Start with a group units who you can directly observe: like the people who showed up to a lab, villages in a region, respondents willing to take a survey.
-
-- Every observation has a known probability of treatment assignment between 0 and 1.
-
-  - No unit in the experimental sample is assigned to treatment or to control with certainty.
-
-- Units can vary in their probability of treatment assignment.
-
-  - For example, the probability might vary by group: women might have a 75\% probability of being assigned to treatment.
-
-  - Assignment probabilities can even vary across units **as long as you know the probability for each and every unit**, though that would complicate your analysis.
-
-## Random assignment $\neq$ random sampling
-
-- Random sampling (from population): selecting subjects into your sample from a population with known probability. You cannot directly observe the whole population so you draw a sample.
-
-- Randomization (of treatment): assigning subjects from an existing group of
-  subjects with known probability to experimental conditions.
-  - You need to be able to see outcomes and assign treatment for every subject in the group
-  - This random assignment of treatment can be combined with any kind of sample
-    (random sample, convenience sample, etc.) or even with the whole population
-    (all the hospitals, all the judges).
-
-## Random assignment $\neq$ random sampling
-
-- How you recruit your initial group (or experimental pool) matters:
-
-  - a big initial group means a big experiment and more statistical power to
-    detect small effects.
-
-  - an initial group which is a random sample from a known population helps you
-    make the argument that your effects might be the same or similar if you did
-    this experiment with another sample from that population.
-
-  - an experimental pool that is a random sample might also help with the
-    argument that the effect should be similar if you scaled up the
-    intervention to the whole population --- depending on the factors driving a
-    global equilibrium.
-
-
-## Randomization is closely linked to your research design
-
-- Remember that you need to define and justify your control condition:
-   - this may be no intervention
-   - or a placebo
-
-## Level of treatments and outcomes
-
-- Treatment can be assigned at different levels: individuals, groups,
-  institutions, communities, time periods, or many different levels.
-
-- You may be constrained in what level you can _assign_ treatment and _measure_ outcomes.
-
-  - Example: Treatment at the classroom level, but outcomes at the student level.
-
-  - Example: Treatment at the district level, but outcomes at the community level.
-
-- The level at which treatment is assigned and at which outcomes are measured affect what your study can demonstrate.
-
-## Extra: Randomization is powerful (1)
+## Randomization and an unbiased estimator
 
 - Say we want the ATE, $\overline{\tau_i}= \overline{Y_i(1)-Y_i(0)}$.
 
@@ -956,7 +927,7 @@ Start with a group units who you can directly observe: like the people who showe
 \centering
 ATE $= \overline{Y_i(1)-Y_i(0)} = \overline{Y_i(1)}-\overline{Y_i(0)}$
 
-## Extra: Randomization is powerful (2)
+## Randomization and an unbiased estimator
 
 - Let's *randomly assign* some of our units to the treatment condition.  For these treated units, we measure the outcome $Y_i|T_i=1$, which is the same as $Y_i(1)$ for these units.
 
@@ -974,7 +945,7 @@ $E_R[\overline{Y_i}|T_i=1]=\overline{Y_i(1)}$.
 \centering
 $E_R[\overline{Y_i}|T_i=0]=\overline{Y_i(0)}$.
 
-## Extra: Randomization is powerful (3)
+## Randomization and an unbiased estimator
 
  -  The same logic applies when we measure $Y_i$ for the control units ($Y_i|T_i=0$).  So $\overline{Y_i}|T_i=0$, which we can calculate, gives us an unbiased estimate of $\overline{Y_i(0)}$.
 
@@ -988,26 +959,24 @@ $E_R[\overline{Y_i}|T_i=0]=\overline{Y_i(0)}$.
 \centering
 	$E_R[Y_i| T_i = 1 ] - E_R[Y_i | T_i = 0] = \overline{Y_i(1)} - \overline{Y_i(0)}$.
 
-
 - So we can just take the difference of these unbiased estimators of $\overline{Y_i(1)}$ and
  $\overline{Y_i(0)}$ to get an unbiased estimate of the ATE.
-# Estimation, Estimators, Bias, Consistency, Given Randomization
 
 ## Estimating the ATE in an RCT:
 
 Here are two proposals for estimating the ATE. How would we know whether either
-or both of them work well (trick question)? (What do we want estimators to do for us?)
+or both of them work well (trick question)? (What do we want estimators to do for us? Recall "unbiased". What does this mean?)
 
 ```{r echo=TRUE}
-est1 <- function(Z,Y){
-    mean(Y[Z==1]) - mean(Y[Z==0])
+est1 <- function(Z, Y) {
+  mean(Y[Z == 1]) - mean(Y[Z == 0])
 }
-est2 <- function(Z,Y){
-    coef(lm(Y~Z))[["Z"]]
+est2 <- function(Z, Y) {
+  coef(lm(Y ~ Z))[["Z"]]
 }
 
-with(dat,est1(Z=Z,Y=Y))
-with(dat,est2(Z=Z,Y=Y))
+with(dat, est1(Z = Z, Y = Y))
+with(dat, est2(Z = Z, Y = Y))
 ```
 
 ## How does randomization help us trust our estimators? {.shrink}
@@ -1016,20 +985,21 @@ This is a simulation assessing **estimation bias** (and hinting at **consistency
 
 ```{r, echo=TRUE}
 ## The truth:
-with(dat,mean(y1-y0))
+with(dat, mean(y1 - y0))
 
-new_exp <- function(Z){
-    ## This next shuffles Z
-    newZ <- sample(Z)
-    return(newZ)}
+new_exp <- function(Z) {
+  ## This next shuffles Z
+  newZ <- sample(Z)
+  return(newZ)
+}
 
-new_est <- function(newZ,y0,y1,the_est){
-    newY <- newZ * y1 + (1-newZ)*y0
-    result <- the_est(Z=newZ,Y=newY)
+new_est <- function(newZ, y0, y1, the_est) {
+  newY <- newZ * y1 + (1 - newZ) * y0
+  result <- the_est(Z = newZ, Y = newY)
 }
 
 set.seed(1235)
-dist_est1 <- with(dat, replicate(100, new_est(newZ=new_exp(Z),y0=y0,y1=y1,the_est=est1)))
+dist_est1 <- with(dat, replicate(100, new_est(newZ = new_exp(Z), y0 = y0, y1 = y1, the_est = est1)))
 mean(dist_est1)
 ```
 
@@ -1039,16 +1009,15 @@ Note: (1) Different simulations give slightly different results and (2) more sim
 
 
 ```{r, echo=TRUE}
-
 set.seed(1235)
-dist_est1a <- with(dat, replicate(100, new_est(newZ=new_exp(Z),y0=y0,y1=y1,the_est=est1)))
+dist_est1a <- with(dat, replicate(100, new_est(newZ = new_exp(Z), y0 = y0, y1 = y1, the_est = est1)))
 mean(dist_est1a)
-dist_est1b <- with(dat, replicate(100, new_est(newZ=new_exp(Z),y0=y0,y1=y1,the_est=est1)))
+dist_est1b <- with(dat, replicate(100, new_est(newZ = new_exp(Z), y0 = y0, y1 = y1, the_est = est1)))
 mean(dist_est1b)
 
-dist_est2a <- with(dat, replicate(10000, new_est(newZ=new_exp(Z),y0=y0,y1=y1,the_est=est1)))
+dist_est2a <- with(dat, replicate(10000, new_est(newZ = new_exp(Z), y0 = y0, y1 = y1, the_est = est1)))
 mean(dist_est2a)
-dist_est2b <- with(dat, replicate(10000, new_est(newZ=new_exp(Z),y0=y0,y1=y1,the_est=est1)))
+dist_est2b <- with(dat, replicate(10000, new_est(newZ = new_exp(Z), y0 = y0, y1 = y1, the_est = est1)))
 mean(dist_est2b)
 ```
 
@@ -1062,7 +1031,7 @@ What did randomization provide here?
 
 ## What about if we didn't know exactly how Z was assigned? {.allowframebreaks}
 
-Imagine that `x1` causes `Z` (here, Z is randomized but x1 changes Z before revealing y0 or y1):
+Imagine that `x1` causes `Z` (here, Z is randomized but x1 changes Z before revealing y0 or y1). This might be called a "broken experiment" because Z is no longer independence of the potential outcomes because it is changed by a covariate that itself is a driver of potential outcomes.
 
 \begin{center}
 \begin{tikzcd}[column sep=large]
@@ -1073,21 +1042,21 @@ Imagine that `x1` causes `Z` (here, Z is randomized but x1 changes Z before reve
 
 
 ```{r biasexample, cache=TRUE, echo=TRUE}
-new_biased_exp <- function(Z,x1){
-    newZ1 <- sample(Z)
-    # newZ <- newZ1*rbinom(10,size=1,prob=(x1+1)/4)
-    newZ <- pnorm(x1+newZ1)>pnorm(median(x1+newZ1))
-    return(as.numeric(newZ))
+new_biased_exp <- function(Z, x1) {
+  newZ1 <- sample(Z)
+  # newZ <- newZ1*rbinom(10,size=1,prob=(x1+1)/4)
+  newZ <- pnorm(x1 + newZ1) > pnorm(median(x1 + newZ1))
+  return(as.numeric(newZ))
 }
-trueATE <- with(dat,mean(y1-y0))
-with(dat,est1(new_biased_exp(Z,x1),Y))
+trueATE <- with(dat, mean(y1 - y0))
+with(dat, est1(new_biased_exp(Z, x1), Y))
 
 set.seed(1235)
-dist_est_biased <- with(dat, replicate(10000, new_est(newZ=new_biased_exp(Z,x1),y0=y0,y1=y1,the_est=est1)))
-summary(trueATE-dist_est_biased)
+dist_est_biased <- with(dat, replicate(10000, new_est(newZ = new_biased_exp(Z, x1), y0 = y0, y1 = y1, the_est = est1)))
+summary(trueATE - dist_est_biased)
 ## And recall our previous distribution of our estimator across randomizations
 ## This next is unbiased (mean \approx 0)
-summary(trueATE-dist_est2a)
+summary(trueATE - dist_est2a)
 ```
 
 ## What about if we didn't know exactly how Z was assigned?
@@ -1095,10 +1064,10 @@ summary(trueATE-dist_est2a)
 Imagine that `x1` causes `Z` (here, Z is randomized but x1 changes Z before revealing y0 or y1):
 
 ```{r figbias, out.width=".7\\textwidth"}
-plot(density(dist_est2a),ylim=c(0,.8))
-lines(density(na.omit(dist_est_biased)),col="blue")
-abline(v=with(dat,mean(y1-y0)))
-points(c(mean(dist_est_biased,na.rm=TRUE),mean(dist_est2a)),c(0,0),pch=c(17,18),cex=2,col=c("blue","black"))
+plot(density(dist_est2a), ylim = c(0, .8))
+lines(density(na.omit(dist_est_biased)), col = "blue")
+abline(v = with(dat, mean(y1 - y0)))
+points(c(mean(dist_est_biased, na.rm = TRUE), mean(dist_est2a)), c(0, 0), pch = c(17, 18), cex = 2, col = c("blue", "black"))
 ```
 
 ## What about if we didn't know how Z was assigned at all?
@@ -1120,13 +1089,13 @@ Randomization makes $y_1, y_0, \mathbf{X} \perp Z$. How to make use of this fact
 
  1. Interpretable comparisons (lack of omitted variable bias, confounding,
     selection bias)
-      - Can I interpret differences in outcome as caused by $Z$ and not $X$?
-	Is it easy to confuse the effect of $Z$  with the  effects of $X$?
+      - Can I interpret differences in outcome as caused by $Z$ and not some covariate like $x_1$?
+	Is it easy to confuse the effect of $Z$  with the  effects of a covariate like $x_1$?
       - How does  randomization do this? How  does randomization eliminate
-	**alternative explanations**? (Recall that it does not exactly balance $X$.)
+	**alternative explanations**? (Recall that it does not exactly balance all of the covariates in every randomization.)
  2. Reliable statistical inferences (estimators and tests)
       - The idea of **design-based** versus **model-based** statistical
-	inference (next few slides).
+	inference (next few slides). We've hinted at this already.
 
 ## Design Based Approach: Estimate Averages
 
@@ -1135,7 +1104,7 @@ Randomization makes $y_1, y_0, \mathbf{X} \perp Z$. How to make use of this fact
   2. Decide to focus on the average, $\bar{\tau}$, because sample averages,
      $\hat{\bar{\tau}}$ are unbiased and consistent estimators of population
      averages under random sampling (where no covariate determines the sample
-     inclusion probability or assignment to $Z_i$).
+     inclusion probability or assignment to $T_i$).
   3. Estimate $\bar{\tau}$ with the observed difference in means.
 
 \centering
@@ -1147,6 +1116,10 @@ Randomization makes $y_1, y_0, \mathbf{X} \perp Z$. How to make use of this fact
   \includegraphics[width=.9\textwidth]{images/cartoonNeyman.pdf}
 
 ## Lingering Questions?
+
+Questions arising?
+
+Project and R time.
 
 # Appendix
 
