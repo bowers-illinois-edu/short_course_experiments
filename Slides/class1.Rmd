@@ -5,9 +5,7 @@ title: |
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 author: Jake Bowers
 bibliography:
- - ../classbib.bib
- - ../references.bib
- - ../learningdays-book.bib
+ - ../course.bib
 fontsize: 10pt
 graphics: yes
 biblio-style: authoryear-comp
@@ -776,7 +774,6 @@ sim_N10 %>%
 Now try for some larger Ns (here is where DeclareDesign makes our lives much easier):
 
 ```{r echo=TRUE, warning=FALSE, message=FALSE}
-
 the_designs <- redesign(des_N_10, N = c(10, 16, 20))
 sims <- simulate_designs(the_designs, sims = 1000)
 
@@ -791,13 +788,12 @@ cov_bal_res <- sims %>%
   reframe(
     pctile = c(0, .1, .9, 1),
     quantiles = round(quantile(estimate, pctile), 5)
-  ) 
+  )
 
 sims$NF <- factor(sims$N)
-g <- ggplot(sims,aes(x=inquiry,groups=NF,color=NF,y=estimate))+
+g <- ggplot(sims, aes(x = inquiry, groups = NF, color = NF, y = estimate)) +
   geom_boxplot()
 g
-
 ```
 
 ## Summary:
