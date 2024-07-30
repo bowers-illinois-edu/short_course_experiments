@@ -19,7 +19,6 @@ header-includes: |
   \setbeamertemplate{footline}{\begin{beamercolorbox}{section in head/foot}
   \insertframenumber/\inserttotalframenumber \end{beamercolorbox}}
   \setbeamertemplate{itemize item}[circle]
-  \setbeamertemplate{itemize subitem}[triangle]
   \setbeamertemplate{itemize subitem}{\raisebox{0.2em}{\scalebox{1}{$\blacktriangleright$}}}
   \setbeamersize{description width=2ex}
   \setbeamersize{text margin left=1ex,text margin right=1ex}
@@ -88,8 +87,11 @@ colorize <- function(x, color) {
      factorial, blocked or stratified, clustered.
   2. Statistical inference for causal effects in randomized experiments via the
      Fisher and Neyman approaches \autocite[Chap 2]{rosenbaum2010},
-     \autocite[Chap 1-3]{gerbergreen2012}: Estimation, Estimators, Tests,
-     Testing. Also Statistical Power.
+     \autocite[Chap 1-3]{gerbergreen2012}:
+     - Testing
+     - Estimation
+
+Tomorrow: More on statistical power.
 
 Note: You can download (and contribute to) course materials at [https://github.com/bowers-illinois-edu/short_course_experiments](https://github.com/bowers-illinois-edu/short_course_experiments)
 
@@ -101,9 +103,9 @@ Questions arising?
 
 ## Quiz
 
- - What are key features of a randomized experiment? (What would we need to see
+ >- What are key features of a randomized experiment? (What would we need to see
    in a research design to call it a randomized experiment?)
- - Why would social scientists want to use a randomized experiment?
+ >- Why would social scientists want to use a randomized experiment? (How might a randomized experiment relate to one or more theoies?)
  - Why would policy makers want to use a randomized experiment?
  - Someone says a confusing statement, "I love experiments in my studies
    because I know that the treatment group income is exactly the same as the
@@ -113,9 +115,7 @@ Questions arising?
    experimento aleatorio y lo que no garantiza.)
  - Why would we like randomized experiments to have large N? (People often say
    "large samples" but often my experiments are not samples, they are the whole
-   population, or a just a set of people with no sampling.)
- - Say we have some baseline data including covariates like income. If we
-   randomize in a simple
+   population, or a just a set of people with no known sampling plan.)
  - When I write, "Each person has two potential outcomes, $Y_i(T_i=1),
    Y_i(T_i=0)$" what am I assuming?
 
@@ -242,6 +242,10 @@ Should always give you $m$ treated.
 - Blocks that are homogeneous on a given outcome increase precision of
   estimation for that outcome as compared with the experiment without blocks. (We
   will address this more in the power analysis section).
+  
+- Blocks that are homogeneous on key covariates help you avoid unlucky
+randomizations and/or provide statistical power for testing hypotheses about
+differences in effects between levels of that covariate.
 
 ## Example code for block or stratified randomization
 
@@ -371,7 +375,7 @@ We might focus on an estimand like  $\mathbb{E}[Y(X_1=1, X_2=1)]-\mathbb{E}[Y(X_
 
 See <https://egap.org/resource/10-things-to-know-about-randomization/>
 
-```{r}
+```{r, echo=TRUE}
 dat <- data.frame(id = 1:20)
 
 dat$treatment_1 <- complete_ra(N = 20, m = 10)
@@ -492,7 +496,7 @@ design overall is consistent with what we'd expect from a well randomized
 design? If we observe `x1` before randomizing we can create strata and then
 randomize within those strata.
 
-```{r}
+```{r, echo=TRUE}
 table(sim_dat$x1)
 sim_dat <- sim_dat %>% mutate(x1_cat = case_when(
   x1 == 0 ~ 1,
@@ -563,10 +567,10 @@ create_blocked_design <- function(N) {
 }
 ```
 
+## The Block-randomized design has less variability in $x_1$
 
 
-
-```{r}
+```{r, echo=TRUE}
 set.seed(12345)
 des_blocked <- create_blocked_design(N = 30)
 sim_dat_blocked <- draw_data(des_blocked)
@@ -606,7 +610,7 @@ g_des
   - To prevent unlucky designs trying stratifying or blocking **before**
   randomizing to create a block or strata-randomized design.
 
-# Hypothesizing about partially observed potential outcomes and summarizing evidence against those hypotheses
+# Testing hypotheses partially observed potential outcomes
 
 ## Statistical Approaches To Causal Inference: Potential Outcomes
 
@@ -633,7 +637,7 @@ These $Y$ are are *potential* or *partially observed* outcomes.
  2. Measure consistency of the data with this model given the research design and choice of test statistic (summarizing the treatment-to-outcome relationship).
 
 \centering
-  \includegraphics[width=.7\textwidth]{../Images/cartoonFisherQuestionMarks.pdf}
+  \includegraphics[width=.6\textwidth]{../Images/cartoonFisherQuestionMarks.pdf}
 
 ## Design Based Approach 1: Compare Models of Potential Outcomes to Data
 
@@ -641,7 +645,7 @@ These $Y$ are are *potential* or *partially observed* outcomes.
  2. Measure consistency of data with this model given the design and test statistic with a $p$-value.
 
 \centering
-  \includegraphics[width=.7\textwidth]{../Images/cartoonFisher.pdf}
+  \includegraphics[width=.6\textwidth]{../Images/cartoonFisher.pdf}
 
 ## Design Based Approach 1: Compare Models of Potential Outcomes to Data
 
@@ -662,9 +666,6 @@ These $Y$ are are *potential* or *partially observed* outcomes.
   - For example, a best guess when 95% of $Y=1$ and 5% of $Y=0$ seems to tell us less than when outcomes are evenly split between 0 and 1.
 
 - We nearly always report both since both help us make decisions: "Our best guess of the treatment effect was 5, and we could reject the idea that the effect was 0 ($p$=.01)." (Is short hand for "I have a big enough sample or enough information (say, not a very rare outcome) that our hypothesized model of no effects would be surprising from the perspective of the observed data --- using a test statistic that is a mean difference.")
-
-
-# Hypothesis Testing Basics
 
 ## Ingredients of a hypothesis test
 
@@ -769,7 +770,7 @@ The outcome we observe for each person $i$, $Y_i$, is either what we would have
 observed in treatment ($Y_{i}(1)$) **or** what we would have observed in
 control ($Y_{i}(0)$).
 
-$$Y_i = T_i Y_{i}(1) + (1-T_i)* Y_{i}(0)$$
+$$Y_i = T_i Y_{i}(1) + (1-T_i) Y_{i}(0)$$
 
 So, if $Y_{i}(1)=Y_{i}(0)$ then algebra tells us that $Y_i = Y_{i}(0)$.
 
@@ -802,7 +803,7 @@ possibleMeanRankDiffsH0 <- replicate(
 
 ## Plot the randomization distributions under the null
 
-```{r fig.cap="An example of using the design of the experiment to test a hypothesis with two different test statistics.", results='asis', echo=FALSE, fig.align='center'}
+```{r fig.cap="An example of using the design of the experiment to test a hypothesis with two different test statistics.", results='asis', echo=FALSE, fig.align='center',out.width=".6\\textwidth"}
 par(mfrow = c(1, 2), mgp = c(2, .5, 0), mar = c(3, 3, 0, 0), oma = c(0, 0, 3, 0))
 plot(density(possibleMeanDiffsH0),
   ylim = c(0, .04),
@@ -874,11 +875,12 @@ pMeanRank2
 
 - Power of hypothesis tests ([Module on Statistical Power and Design Diagnosands tomorrow](https://egap.github.io/learningdays-book/statistical-power-and-design-diagnosands.html)).
 
-# Testing weak null hypotheses
+# Testing weak hypotheses about aggregates of potential outcomes like the ATE
 
 ## Testing the weak null of no average effects
 
-- The weak null hypothesis is a claim about aggregates, and it is nearly always stated in terms of averages: $H_0: \bar{y}_{1} = \bar{y}_{0}$
+- The weak null hypothesis is a claim about aggregates, and it is nearly always
+stated in terms of averages: $H_0: \bar{y}_{1} = \bar{y}_{0}$
 
 - The test statistic for this hypothesis is nearly always the simple difference of means (i.e., `meanTT()` above).
 
@@ -891,7 +893,8 @@ ttestP2 <- difference_in_means(Y ~ T, data = dat)
 c(lm1P = lm1P, ttestP1 = ttestP1, tttestP2 = ttestP2$p.value)
 ```
 
-- Why is the OLS $p$-value different? What assumptions do we use to calculate it?
+- Why is the OLS $p$-value different? What assumptions do we use to calculate
+it? How do those assumptions relate to the experimental design?
 
 ## Testing the weak null of no average effects
 
@@ -929,8 +932,6 @@ c(
   )
 )
 ```
-
-# Rejecting null hypotheses
 
 ## Rejecting hypotheses and making errors
 
@@ -1580,9 +1581,6 @@ est1 <- difference_in_means(Y ~ T, data = dat)
 est1
 ```
 
-
-# Key points
-
 ## Key points about estimation I
 
   -  A causal effect, $\tau_i$, is a comparison of unobserved potential outcomes for each unit $i$: examples  $\tau_{i} = Y_{i}(T_{i}=1) -  Y_{i}(T_{i}=0)$ or  $\tau_{i} = \frac{Y_{i}(T_{i}=1)}{ Y_{i}(T_{i}=0)}$.
@@ -1629,8 +1627,6 @@ est1
 
  - We do not **control for** background covariates when we analyze data from randomized experiments. But covariates can make our estimation more **precise**. This is called **covariance adjustment** (or covariate adjustment). **Covariance adjustment** in randomized experiments differs from controlling for in observational studies.
 
-# Review
-
 ## Review: Causal effects
 
 Review: Causal inference refers to a comparison of unobserved, fixed, potential outcomes.
@@ -1644,8 +1640,6 @@ For example:
 
 Treatment assignment, $T_i$, has a causal effect on  unit $i$, that we call $\tau_i$, if
 $Y_{i}(T_{i}=1) -  Y_{i}(T_{i}=0) \ne 0$ or $Y_{i}(T_{i}=1) \ne Y_{i}(T_{i}=0)$.
-
-# Estimands and estimators and averages
 
 ## How can we learn about causal effects from observed data?
 
@@ -2717,29 +2711,10 @@ kableExtra::kable(res_bin, digits = 3, booktabs = TRUE, linesep = "", caption = 
 
 ## Covariance adjustment: Estimands
 
-In general, simply "controlling for" produces a biased estimator of the ATE **or** ITT estimand. See for example @lin_agnostic_2013 and @freedman2008rae.
-@lin_agnostic_2013 shows how to reduce this bias and, importantly, that this bias tends to be small as the sample size increases.
-
-
-# Conclusion
-
-## Final thoughts on basics of estimation
-
-- Counterfactual causal estimands are unobserved functions of potential
-outcomes.
-
-- Estimators are recipes or computational formulas that use observed data to
-learn about an estimand.
-
-- Good estimators produce estimates that are close to the true estimand
-
-- (Connecting estimation with testing) Standard errors of estimators allow us
-to calculate confidence intervals and $p$-values. Certain estimators have
-larger or smaller (or more or less correct) standard errors.
-
-- You can assess the utility of a chosen estimator for a chosen estimand by simulation.
-
-# Causal effects that differ by groups or covariates
+In general, simply "controlling for" produces a biased estimator of the ATE
+**or** ITT estimand. See for example @lin_agnostic_2013 and @freedman2008rae.
+@lin_agnostic_2013 shows how to reduce this bias and, importantly, that this
+bias tends to be small as the sample size increases.
 
 ## Effects that differ by groups I
 
@@ -2761,19 +2736,35 @@ If our theory suggests that effects should differ by group, how can we assess ev
    easily create problems of testing too many hypotheses thus inflated false
    positive rates.
 
- - We **should not use groups formed by treatment**. (This is either "mediation analysis"  or "conditioning on post-treatment variables" and deserves its own module).
+ - We **should not use groups formed by treatment**. (This is either "mediation
+ analysis"  or "conditioning on post-treatment variables" and deserves its own
+ module).
 
-# Summary
+
+## Final thoughts on basics of estimation
+
+- Counterfactual causal estimands are unobserved functions of potential
+outcomes.
+
+- Estimators are recipes or functions that use observed data to
+learn about an estimand.
+
+- Good estimators produce estimates that are close to the true estimand
+
+- (Connecting estimation with testing) Standard errors of estimators allow us
+to calculate confidence intervals and $p$-values. Certain estimators have
+larger or smaller (or more or less correct) standard errors.
+
+- You can assess the utility of a chosen estimator for a chosen estimand by simulation.
+
+# Summary of the day
 
 ## Summary
 
- - Statistics helps us make infer about counterfactual causal effects
- - We can hypothesize about those effects and summarize how much evidence our design and data provide.
- - We can calculate best guesses about aggregates of causal effects.
+ - Statistics helps us **infer** about partially observable counterfactual causal effects
+ - We can **hypothesize about those effects** and summarize how much evidence our design and data provide.
+ - We can **calculate best guesses** about aggregates of causal effects.
  - We can test hypotheses about the aggregates, too.
- - The statistical properties of our tests and estimators arise from the
-   randomization, from the structure of the design.
-
-# Appendix
+ - The statistical properties of our tests and estimators arise from the experimental design, not from a relationship between sample and population.
 
 ## References {.allowframebreaks}
