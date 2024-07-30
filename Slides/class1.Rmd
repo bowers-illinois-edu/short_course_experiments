@@ -774,7 +774,7 @@ sim_N10 %>%
 Now try for some larger Ns (here is where DeclareDesign makes our lives much easier):
 
 ```{r echo=TRUE, warning=FALSE, message=FALSE}
-the_designs <- redesign(des_N_10, N = c(10, 16, 20))
+the_designs <- redesign(des_N_10, N = c(10, 16, 20,100))
 sims <- simulate_designs(the_designs, sims = 1000)
 
 sims %>%
