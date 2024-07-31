@@ -30,7 +30,9 @@ header-includes: |
   \usetikzlibrary{arrows}
   \tikzstyle{every picture}+=[remember picture]
   \newcommand{\theHtable}{\thetable}
-  \usepackage{amsmath,amsthm}
+  \usepackage{amsmath,amsthm,bm}
+  \DeclareMathOperator{\Var}{\rm{Var}}
+  \DeclareMathOperator{\E}{\rm{E}}
 output:
   beamer_presentation:
     slide_level: 2
@@ -158,6 +160,7 @@ mean_diff_rank_null_dist <- replicate(1000,mean_diff_rank_test_stat(Y=dat$Y,Z=ne
 obs_mean_diff_test_stat <- mean_diff_test_stat(Y=dat$Y,Z=dat$T)
 obs_mean_diff_rank_test_stat <- mean_diff_rank_test_stat(Y=dat$Y,Z=dat$T)
 
+## two-sided p-values
 2*min(mean(mean_diff_null_dist>=obs_mean_diff_test_stat),
   mean(mean_diff_null_dist<obs_mean_diff_test_stat))
 
@@ -250,6 +253,51 @@ apply(many_ps, 1, function(x) {
   mean(x <= .1)
 })
 ```
+
+# Review of Hypothesis Testing
+
+## Hypothesis testing
+
+ - A hypothesis is a statement about a relationship between potential outcomes 
+ - A hypothesis like $Y_i(1)=Y_i(0)$ or $\bar{Y}_i(1) = \bar{Y}_i(0)$ implies a relationship between potential
+ outcomes and observed outcomes via treatment assignment, for example: $Y_i = T
+ Y_i(1) + (1-T) Y_i(0)$
+ - A test statistic summarizes the relationship between $T$ and $Y$ (for example `mean(Y[T==1]) - mean(Y[T==0])`).
+ - We can see how this test statistic varies by repeating the design of the experiment.
+ - A $p$-value summarizes the relationship between the observed test statistic and the many he hypothetical test statistics that are described by the reference or randomization distribution.
+ 
+ A $p$-value requires a distribution. Where does this distribution come from? What justifies its use?
+
+
+## Hypothesis testing of the sharp null
+
+ - A sharp null hypothesis is a statement about a relationship between potential outcomes for all units 
+ - We can see how this test statistic varies by repeating the design of the experiment.
+ - Because we know exactly how the hypothesized outcomes would look, we can **generate** the distribution for the test statistic exactly (or approximate it very closely)
+
+## Hypothesis testing of the weak null {.shrink}
+
+The finite population CLT tells us that
+
+\begin{align*}
+\cfrac{\hat{\tau}\left(Z, Y \right) - \E\left[\hat{\tau}\left(Z, Y\right)\right]}{\sqrt{\Var\left[\hat{\tau}\left(Z, Y\right)\right]}} & \overset{d}{\to} \mathcal{N}\left(0, 1\right)
+\end{align*}
+
+Diff-in-Means is unbiased, so write
+
+\begin{align*}
+\cfrac{\hat{\tau}\left(Z, Y\right) - \tau}{\sqrt{\Var\left[\hat{\tau}\left(Z, Y\right)\right]}} & \overset{d}{\to} \mathcal{N}\left(0, 1\right)
+\end{align*}
+
+The CLT is an asymptotic results as $N \to \infty$
+
+Thus, with experiments of at least moderate size and outcomes that aren't too skewed or have extreme outliers,
+
+\begin{align*}
+\cfrac{\hat{\tau}\left(Z, Y\right) - \tau}{\sqrt{\Var\left[\hat{\tau}\left(Z, Y\right)\right]}} & \overset{\text{approx.}}{\sim} \mathcal{N}\left(0, 1\right)
+\end{align*}
+
+This justifies use of standard Normal distribution for hypothesis tests
 
 
 # Estimation
@@ -824,7 +872,7 @@ sims2 <- get_simulations(diagnosis2)
 
 How should we interpret this plot?
 
-```{r sim_plot2, warning=FALSE, out.width=".9\\textwidth"}
+```{r sim_plot2, warning=FALSE, message=FALSE, out.width=".9\\textwidth"}
 sim_plot2 <- ggplot(sims2, aes(y = estimate, x = estimator, color = estimator)) +
   geom_boxplot() +
   geom_hline(yintercept = trueATE) +
