@@ -65,6 +65,23 @@
       ],
       "Hash": "cdd76cdd712d77020083cf669af8b3f3"
     },
+    "DesignLibrary": {
+      "Package": "DesignLibrary",
+      "Version": "0.1.10",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "DeclareDesign",
+        "R",
+        "estimatr",
+        "fabricatr",
+        "generics",
+        "glue",
+        "randomizr",
+        "rlang"
+      ],
+      "Hash": "907fe16fc243b4e530cdb73764921bd9"
+    },
     "Exact": {
       "Package": "Exact",
       "Version": "3.3",
@@ -89,6 +106,13 @@
         "stats"
       ],
       "Hash": "7a29697b75e027767a53fde6c903eca7"
+    },
+    "ICC": {
+      "Package": "ICC",
+      "Version": "2.4.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1cc8b7b2185c2836fc218b49bd00785e"
     },
     "MASS": {
       "Package": "MASS",
@@ -1923,6 +1947,17 @@
       ],
       "Hash": "1cba04a4e9414bdefc9dcaa99649a8dc"
     },
+    "pwr": {
+      "Package": "pwr",
+      "Version": "1.3-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "graphics",
+        "stats"
+      ],
+      "Hash": "adfa41db3678b41bf9235c514c51799a"
+    },
     "ragg": {
       "Package": "ragg",
       "Version": "1.3.2",
@@ -2095,6 +2130,17 @@
         "withr"
       ],
       "Hash": "97b1d5361a24d9fb588db7afe3e5bcbf"
+    },
+    "revealjs": {
+      "Package": "revealjs",
+      "Version": "0.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "rmarkdown"
+      ],
+      "Hash": "08e30caa337e6d335d83df1a05d5b9f3"
     },
     "rlang": {
       "Package": "rlang",
